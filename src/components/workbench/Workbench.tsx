@@ -17,8 +17,31 @@ function makeSavedQueryId(): string {
   return `saved_${Math.random().toString(36).slice(2, 10)}`;
 }
 
-function makeQueryTitle(index: number): string {
-  return `biospec_organism_pivot ${index === 1 ? "" : `(${index})`}`.trim();
+function inferBaseQueryTitle(sql: string): string {
+  const compactSql = sql.replace(/--.*$/gm, " ").replace(/\s+/g, " ").trim();
+  if (!compactSql) {
+    return "query";
+  }
+
+  const fromMatch = compactSql.match(/\bfrom\s+([a-zA-Z0-9_.]+)/i);
+  if (fromMatch?.[1]) {
+    return fromMatch[1].split(".").pop() ?? "query";
+  }
+
+  const execMatch = compactSql.match(/\bexec(?:ute)?\s+([a-zA-Z0-9_.]+)/i);
+  if (execMatch?.[1]) {
+    return execMatch[1].split(".").pop() ?? "query";
+  }
+
+  return compactSql.split(" ")[0].toLowerCase();
+}
+
+function makeQueryTitleForSql(sql: string, existingTitles: string[]): string {
+  const baseTitle = inferBaseQueryTitle(sql);
+  const sameBaseCount = existingTitles.filter(
+    (title) => title === baseTitle || title.startsWith(`${baseTitle} (`),
+  ).length;
+  return sameBaseCount === 0 ? baseTitle : `${baseTitle} (${sameBaseCount + 1})`;
 }
 
 function makeSavedQueryLabel(sql: string, index: number): string {
@@ -49,7 +72,7 @@ export function Workbench() {
   const starterQueries = useMemo(() => getStarterQueries(), []);
   const recommendedQueries = useMemo(() => getRecommendedQueries(), []);
 
-  const initialSql = starterQueries[0]?.sqlTemplates[0] ?? presetSql.onePage;
+  const initialSql = `-- Brian bio sample query\n${starterQueries[0]?.sqlTemplates[0] ?? presetSql.onePage}`;
   const defaultSavedQueries = useMemo<SavedQuery[]>(
     () =>
       starterQueries.map((query) => ({
@@ -72,7 +95,7 @@ export function Workbench() {
   const [tabs, setTabs] = useState<QueryTab[]>([
     {
       id: makeTabId(),
-      title: makeQueryTitle(1),
+      title: makeQueryTitleForSql(initialSql, []),
       sql: initialSql,
       status: "idle",
       result: null,
@@ -127,7 +150,7 @@ export function Workbench() {
         ...previous,
         {
           id: newTabId,
-          title: makeQueryTitle(previous.length + 1),
+          title: makeQueryTitleForSql(sql, previous.map((tab) => tab.title)),
           sql,
           status: result.status,
           result,
@@ -169,8 +192,8 @@ export function Workbench() {
       ...previous,
       {
         id: newTabId,
-        title: makeQueryTitle(previous.length + 1),
-        sql: presetSql.onePage,
+        title: makeQueryTitleForSql(presetSql.onePage, previous.map((tab) => tab.title)),
+        sql: `-- Brian bio sample query\n${presetSql.onePage}`,
         status: "idle",
         result: null,
       },
@@ -225,7 +248,7 @@ export function Workbench() {
         ...previous,
         {
           id: newTabId,
-          title: makeQueryTitle(previous.length + 1),
+          title: makeQueryTitleForSql(savedQuery.sql, previous.map((tab) => tab.title)),
           sql: savedQuery.sql,
           status: result.status,
           result,
@@ -273,12 +296,12 @@ export function Workbench() {
   const handleRunRecommended = useCallback(() => {
     const newTabs: QueryTab[] = [];
 
-    recommendedQueries.forEach((query, index) => {
+    recommendedQueries.forEach((query) => {
       const sql = query.sqlTemplates[0] ?? "";
       const result = executeQuery(sql, defaultMode);
       const tab: QueryTab = {
         id: makeTabId(),
-        title: makeQueryTitle(tabs.length + index + 1),
+        title: makeQueryTitleForSql(sql, tabs.concat(newTabs).map((item) => item.title)),
         sql,
         status: result.status,
         result,
@@ -292,7 +315,7 @@ export function Workbench() {
       setActiveTabId(newTabs[newTabs.length - 1].id);
       setStatusNote("Ran recommended resume storyline queries");
     }
-  }, [recommendedQueries, tabs.length]);
+  }, [recommendedQueries, tabs]);
 
   const handleLoadFirstSaved = useCallback(() => {
     const firstSaved = savedQueries[0];
@@ -370,8 +393,8 @@ export function Workbench() {
     setTabs([
       {
         id: baseTabId,
-        title: makeQueryTitle(1),
-        sql: presetSql.onePage,
+        title: makeQueryTitleForSql(presetSql.onePage, []),
+        sql: `-- Brian bio sample query\n${presetSql.onePage}`,
         status: "idle",
         result: null,
       },
@@ -415,7 +438,7 @@ export function Workbench() {
           <button type="button" className="wb-home-btn" aria-label="Home" onClick={handleHome}>
             <span className="wb-glyph wb-glyph--home" />
           </button>
-          <div className="wb-connection-tab">biospec(local-bmarko) - Warning - not supported</div>
+          <div className="wb-connection-tab">resume_db(local-brian) - Brian bio sample loaded</div>
           <div className="wb-window-icons">
             <button
               type="button"
