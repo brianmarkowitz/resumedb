@@ -472,8 +472,8 @@ export function Workbench() {
   const workAreaClassName = `wb-work-area${sidebarCollapsed ? " wb-work-area--sidebar-collapsed" : ""}`;
   const footerText =
     displayMode === "standard_resume"
-      ? "Standard Resume Opened. Inspired by MySQL Workbench UI."
-      : "SQL Editor Opened. Inspired by MySQL Workbench UI.";
+      ? "Standard Resume Opened. MySQL Workbench-inspired ResumeDB replica."
+      : "SQL Editor Opened. MySQL Workbench-inspired ResumeDB replica.";
 
   return (
     <main className="wb-page">
@@ -496,7 +496,7 @@ export function Workbench() {
           <div className="wb-window-icons">
             <button
               type="button"
-              className={`wb-view-toggle${displayMode === "standard_resume" ? " wb-view-toggle--active" : ""}`}
+              className={`wb-chrome-btn wb-chrome-btn--mode${displayMode === "standard_resume" ? " wb-chrome-btn--active" : ""}`}
               aria-label={
                 displayMode === "workbench"
                   ? "Open standard resume view"
@@ -514,7 +514,7 @@ export function Workbench() {
               }}
               title={displayMode === "workbench" ? "Standard Resume" : "SQL Workbench"}
             >
-              {displayMode === "workbench" ? "R" : "SQL"}
+              <span className="wb-glyph wb-glyph--mode">{displayMode === "workbench" ? "R" : "S"}</span>
             </button>
             <button
               type="button"
@@ -535,7 +535,7 @@ export function Workbench() {
               }}
               title="Toggle schema sidebar"
             >
-              <span className="wb-glyph wb-glyph--rect" />
+              <span className="wb-glyph wb-glyph--layout-primary" />
             </button>
             <button
               type="button"
@@ -547,7 +547,7 @@ export function Workbench() {
               }}
               title="Toggle compact density"
             >
-              <span className="wb-glyph wb-glyph--mini" />
+              <span className="wb-glyph wb-glyph--layout-secondary" />
             </button>
             <button
               type="button"
@@ -556,7 +556,7 @@ export function Workbench() {
               onClick={handleRunRecommended}
               title="Run recommended storyline"
             >
-              <span className="wb-glyph wb-glyph--max" />
+              <span className="wb-glyph wb-glyph--layout-solid" />
             </button>
           </div>
         </div>
