@@ -102,7 +102,7 @@ export function SqlEditorTabs({
             suggestOnTriggerCharacters: false,
           }}
           theme="vs-dark"
-          height="340px"
+          height="240px"
         />
       </div>
     </section>
