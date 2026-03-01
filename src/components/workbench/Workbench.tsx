@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ModeToggle } from "@/components/workbench/ModeToggle";
 import { QuickActions } from "@/components/workbench/QuickActions";
 import { ResultsPanel } from "@/components/workbench/ResultsPanel";
@@ -41,6 +41,8 @@ function makeSavedQueryLabel(sql: string, index: number): string {
   return singleLineSql.length > 52 ? `${singleLineSql.slice(0, 52)}...` : singleLineSql;
 }
 
+const savedQueryStorageKey = "resumedb_custom_saved_queries_v1";
+
 export function Workbench() {
   const starterQueries = useMemo(() => getStarterQueries(), []);
   const recommendedQueries = useMemo(() => getRecommendedQueries(), []);
@@ -54,6 +56,10 @@ export function Workbench() {
         sql: query.sqlTemplates[0] ?? "",
       })),
     [starterQueries],
+  );
+  const defaultSavedQueryIds = useMemo(
+    () => new Set(defaultSavedQueries.map((query) => query.id)),
+    [defaultSavedQueries],
   );
 
   const [mode, setMode] = useState<QueryMode>("simple");
@@ -69,7 +75,41 @@ export function Workbench() {
   ]);
   const [activeTabId, setActiveTabId] = useState<string>(() => tabs[0]?.id ?? "");
   const [history, setHistory] = useState<HistoryItem[]>([]);
-  const [savedQueries, setSavedQueries] = useState<SavedQuery[]>(defaultSavedQueries);
+  const [savedQueries, setSavedQueries] = useState<SavedQuery[]>(() => {
+    if (typeof window === "undefined") {
+      return defaultSavedQueries;
+    }
+
+    const rawSavedQueries = window.localStorage.getItem(savedQueryStorageKey);
+    if (!rawSavedQueries) {
+      return defaultSavedQueries;
+    }
+
+    try {
+      const parsed = JSON.parse(rawSavedQueries);
+      if (!Array.isArray(parsed)) {
+        return defaultSavedQueries;
+      }
+
+      const customSavedQueries = parsed.filter(
+        (item): item is SavedQuery =>
+          typeof item?.id === "string" &&
+          typeof item?.label === "string" &&
+          typeof item?.sql === "string" &&
+          item.sql.trim().length > 0,
+      );
+
+      return [...defaultSavedQueries, ...customSavedQueries];
+    } catch {
+      window.localStorage.removeItem(savedQueryStorageKey);
+      return defaultSavedQueries;
+    }
+  });
+
+  useEffect(() => {
+    const customSavedQueries = savedQueries.filter((query) => !defaultSavedQueryIds.has(query.id));
+    window.localStorage.setItem(savedQueryStorageKey, JSON.stringify(customSavedQueries));
+  }, [defaultSavedQueryIds, savedQueries]);
 
   const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? null;
 
