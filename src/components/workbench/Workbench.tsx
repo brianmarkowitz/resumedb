@@ -813,10 +813,17 @@ export function Workbench() {
                   title="Filter schema to skills"
                   aria-label="Filter schema to skills"
                 >
-                  <ToolbarIcon name="routine-plus" />
+                  <ToolbarIcon name="relation-plus" />
                 </button>
-              </div>
-              <div className="wb-icon-row">
+                <button
+                  type="button"
+                  className="wb-tool wb-tool--top"
+                  onClick={() => openPresetInNewTab("reliability", "Opened reliability highlights view")}
+                  title="Run reliability highlights"
+                  aria-label="Run reliability highlights"
+                >
+                  <ToolbarIcon name="function-plus" />
+                </button>
                 <button
                   type="button"
                   className="wb-tool wb-tool--top"
@@ -826,6 +833,8 @@ export function Workbench() {
                 >
                   <ToolbarIcon name="table-search" />
                 </button>
+              </div>
+              <div className="wb-icon-row">
                 <button
                   type="button"
                   className="wb-tool wb-tool--top"

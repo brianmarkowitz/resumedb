@@ -6,7 +6,8 @@ type ToolbarIconName =
   | "info"
   | "db-plus"
   | "table-plus"
-  | "routine-plus"
+  | "relation-plus"
+  | "function-plus"
   | "table-search"
   | "db-sync"
   | "editor-folder"
@@ -24,90 +25,107 @@ export function ToolbarIcon({ name }: ToolbarIconProps) {
     case "sql-plus":
       return (
         <svg viewBox="0 0 24 24" className="wb-tool-icon" aria-hidden="true">
-          <path d="M5 2.2h10.2l4 4.2v13H5z" fill="#f7f7f8" stroke="#4d4f57" strokeWidth="1.2" />
-          <path d="M15.2 2.2v4.4h4" fill="#ececef" stroke="#4d4f57" strokeWidth="1.2" />
-          <text x="6.5" y="10.5" fontSize="4.5" fontWeight="700" fill="#3f4148">
+          <path d="M4.7 2.3h10.4l3.6 3.6v14.8H4.7z" fill="#f7f8fb" stroke="#474a52" strokeWidth="1.15" />
+          <path d="M15.1 2.3v3.8h3.6" fill="#e8ebf1" stroke="#474a52" strokeWidth="1.15" />
+          <text x="6.3" y="9.9" fontSize="4.2" fontWeight="700" fill="#363942">
             SQL
           </text>
-          <circle cx="6.1" cy="18.1" r="3.9" fill="#d8d9df" stroke="#4d4f57" strokeWidth="1.1" />
-          <path d="M6.1 15.8v4.6M3.8 18.1h4.6" stroke="#3f4148" strokeWidth="1.35" strokeLinecap="round" />
+          <path d="M6.7 12h9M6.7 14.1h9M6.7 16.2h6.8" stroke="#646874" strokeWidth="0.9" strokeLinecap="round" />
+          <circle cx="5.5" cy="18.4" r="3.6" fill="#d3d5dd" stroke="#464951" strokeWidth="1.1" />
+          <path d="M5.5 16.5v3.8M3.6 18.4h3.8" stroke="#353840" strokeWidth="1.1" strokeLinecap="round" />
         </svg>
       );
     case "sql-doc":
       return (
         <svg viewBox="0 0 24 24" className="wb-tool-icon" aria-hidden="true">
-          <path d="M3.8 5h9.2l3.5 3.5v10.8h-12.7z" fill="#ececef" stroke="#4d4f57" strokeWidth="1.05" />
-          <path d="M6.2 2.2h10l3.8 4v12.1h-1.4V6.8h-3.8V2.2z" fill="#f8f8fa" stroke="#4d4f57" strokeWidth="1.2" />
-          <path d="M16.2 2.2v4.6h3.8" fill="#ebecf0" stroke="#4d4f57" strokeWidth="1.2" />
-          <text x="7.4" y="10.2" fontSize="4.3" fontWeight="700" fill="#3f4148">
+          <path d="M3.6 4.8h10.1l3.2 3.2v11.3H3.6z" fill="#e2e4eb" stroke="#474a52" strokeWidth="1.05" />
+          <path d="M7.1 2.2h10.1l3.2 3.3v14.1H7.1z" fill="#f8f9fb" stroke="#474a52" strokeWidth="1.15" />
+          <path d="M17.2 2.2v3.5h3.2" fill="#eaedf2" stroke="#474a52" strokeWidth="1.15" />
+          <text x="8.2" y="9.2" fontSize="3.8" fontWeight="700" fill="#373a43">
             SQL
           </text>
-          <path d="M7.3 13.2h7.8M7.3 15.6h8.9" stroke="#666872" strokeWidth="1.15" strokeLinecap="round" />
+          <path d="M8.7 11.3h8M8.7 13.5h8M8.7 15.7h8" stroke="#666a75" strokeWidth="0.95" strokeLinecap="round" />
         </svg>
       );
     case "info":
       return (
         <svg viewBox="0 0 24 24" className="wb-tool-icon" aria-hidden="true">
-          <rect x="9.4" y="4.1" width="10" height="11.6" fill="#eceef3" stroke="#4d4f57" strokeWidth="1.1" />
-          <path d="M11.2 7.2h6.4M11.2 9.6h6.4M11.2 12h6.4" stroke="#686b75" strokeWidth="1.05" strokeLinecap="round" />
-          <ellipse cx="8" cy="4.7" rx="4.2" ry="1.8" fill="#e8eaf0" stroke="#4d4f57" strokeWidth="1.1" />
-          <path d="M3.8 4.7v3.8c0 1 1.9 1.8 4.2 1.8s4.2-.8 4.2-1.8V4.7" fill="#d9dce5" stroke="#4d4f57" strokeWidth="1.1" />
-          <circle cx="6.2" cy="16.8" r="4.2" fill="#d8d9df" stroke="#4d4f57" strokeWidth="1.1" />
-          <circle cx="6.2" cy="15.2" r="0.9" fill="#43464e" />
-          <path d="M6.2 16.9v2.2" stroke="#43464e" strokeWidth="1.4" strokeLinecap="round" />
+          <ellipse cx="8.1" cy="4.6" rx="3.9" ry="1.7" fill="#eceef3" stroke="#474a52" strokeWidth="1.1" />
+          <path d="M4.2 4.6v4.2c0 1 1.7 1.8 3.9 1.8s3.9-.8 3.9-1.8V4.6" fill="#d9dce5" stroke="#474a52" strokeWidth="1.1" />
+          <rect x="10.9" y="3.7" width="8.5" height="10.8" fill="#eceff4" stroke="#474a52" strokeWidth="1.1" />
+          <path d="M12.3 6.3h5.8M12.3 8.6h5.8M12.3 10.9h5.8" stroke="#686c77" strokeWidth="1" strokeLinecap="round" />
+          <circle cx="6" cy="17.6" r="3.6" fill="#d3d5dd" stroke="#464951" strokeWidth="1.1" />
+          <circle cx="6" cy="16.2" r="0.8" fill="#353840" />
+          <path d="M6 17.4v2" stroke="#353840" strokeWidth="1.15" strokeLinecap="round" />
         </svg>
       );
     case "db-plus":
       return (
         <svg viewBox="0 0 24 24" className="wb-tool-icon" aria-hidden="true">
-          <ellipse cx="11.8" cy="5.7" rx="6.6" ry="2.8" fill="#ebedf2" stroke="#4d4f57" strokeWidth="1.2" />
+          <ellipse cx="12" cy="5.3" rx="6.4" ry="2.5" fill="#eceef3" stroke="#474a52" strokeWidth="1.15" />
           <path
-            d="M5.2 5.7v8c0 1.6 3 2.9 6.6 2.9s6.6-1.3 6.6-2.9v-8"
-            fill="#d8dbe4"
-            stroke="#4d4f57"
-            strokeWidth="1.2"
+            d="M5.6 5.3v8.1c0 1.4 2.9 2.6 6.4 2.6s6.4-1.2 6.4-2.6V5.3"
+            fill="#d7dae3"
+            stroke="#474a52"
+            strokeWidth="1.15"
           />
-          <circle cx="6.1" cy="17.9" r="3.8" fill="#d8d9df" stroke="#4d4f57" strokeWidth="1.1" />
-          <path d="M6.1 15.7v4.4M3.9 17.9h4.4" stroke="#3e4148" strokeWidth="1.3" strokeLinecap="round" />
+          <path d="M5.6 9c1 .9 3.6 1.5 6.4 1.5s5.4-.6 6.4-1.5" fill="none" stroke="#666a76" strokeWidth="0.95" />
+          <circle cx="5.9" cy="17.7" r="3.6" fill="#d3d5dd" stroke="#464951" strokeWidth="1.1" />
+          <path d="M5.9 15.8v3.8M4 17.7h3.8" stroke="#353840" strokeWidth="1.1" strokeLinecap="round" />
         </svg>
       );
     case "table-plus":
       return (
         <svg viewBox="0 0 24 24" className="wb-tool-icon" aria-hidden="true">
-          <rect x="3.2" y="3.3" width="14.8" height="14" fill="#eceef3" stroke="#4d4f57" strokeWidth="1.2" />
-          <path d="M3.2 7.9h14.8M3.2 12.5h14.8M7.9 3.3v14M12.6 3.3v14" stroke="#6a6c76" strokeWidth="1" />
-          <circle cx="6.2" cy="18" r="3.8" fill="#d8d9df" stroke="#4d4f57" strokeWidth="1.1" />
-          <path d="M6.2 15.9v4.2M4.1 18h4.2" stroke="#3e4148" strokeWidth="1.25" strokeLinecap="round" />
+          <rect x="3.1" y="3.1" width="14.6" height="13.8" fill="#eceef3" stroke="#474a52" strokeWidth="1.15" />
+          <path d="M3.1 7.7h14.6M3.1 12.3h14.6M7.8 3.1v13.8M12.4 3.1v13.8" stroke="#666a76" strokeWidth="0.95" />
+          <circle cx="6.1" cy="17.7" r="3.6" fill="#d3d5dd" stroke="#464951" strokeWidth="1.1" />
+          <path d="M6.1 15.8v3.8M4.2 17.7H8" stroke="#353840" strokeWidth="1.1" strokeLinecap="round" />
         </svg>
       );
-    case "routine-plus":
+    case "relation-plus":
       return (
         <svg viewBox="0 0 24 24" className="wb-tool-icon" aria-hidden="true">
-          <rect x="3.2" y="3.2" width="15.4" height="14.2" fill="#eceef3" stroke="#4d4f57" strokeWidth="1.2" />
-          <rect x="5.2" y="5.2" width="4.5" height="3.5" fill="#d9dce5" stroke="#6a6c76" strokeWidth="0.8" />
-          <rect x="10.6" y="5.2" width="6" height="10.2" fill="#d9dce5" stroke="#6a6c76" strokeWidth="0.8" />
-          <circle cx="6.1" cy="18" r="3.8" fill="#d8d9df" stroke="#4d4f57" strokeWidth="1.1" />
-          <path d="M6.1 15.9v4.2M4 18h4.2" stroke="#3e4148" strokeWidth="1.25" strokeLinecap="round" />
+          <rect x="3.1" y="4.2" width="9.8" height="8.8" fill="#e8eaf0" stroke="#474a52" strokeWidth="1.1" />
+          <rect x="10.2" y="2.8" width="10.4" height="9.6" fill="#eceef3" stroke="#474a52" strokeWidth="1.1" />
+          <path d="M4.8 6.8h6.4M4.8 9h6.4M11.7 5.2h7.1M11.7 7.4h7.1" stroke="#666a76" strokeWidth="0.9" />
+          <path d="M10.1 9.2 8.6 10.5" stroke="#474a52" strokeWidth="1.05" strokeLinecap="round" />
+          <circle cx="6" cy="17.7" r="3.6" fill="#d3d5dd" stroke="#464951" strokeWidth="1.1" />
+          <path d="M6 15.8v3.8M4.1 17.7h3.8" stroke="#353840" strokeWidth="1.1" strokeLinecap="round" />
+        </svg>
+      );
+    case "function-plus":
+      return (
+        <svg viewBox="0 0 24 24" className="wb-tool-icon" aria-hidden="true">
+          <rect x="3.4" y="4.1" width="16.8" height="12.1" rx="1" fill="#eceef3" stroke="#474a52" strokeWidth="1.15" />
+          <text x="7.5" y="12.3" fontSize="5.8" fontWeight="700" fill="#40434c">
+            f()
+          </text>
+          <path d="M5.6 7.4h12.3" stroke="#666a76" strokeWidth="0.9" />
+          <circle cx="6.1" cy="17.7" r="3.6" fill="#d3d5dd" stroke="#464951" strokeWidth="1.1" />
+          <path d="M6.1 15.8v3.8M4.2 17.7H8" stroke="#353840" strokeWidth="1.1" strokeLinecap="round" />
         </svg>
       );
     case "table-search":
       return (
         <svg viewBox="0 0 24 24" className="wb-tool-icon" aria-hidden="true">
-          <rect x="3.1" y="3.2" width="12.8" height="14.8" fill="#eceef3" stroke="#4d4f57" strokeWidth="1.2" />
-          <path d="M3.1 7.8h12.8M3.1 12.4h12.8M7.3 3.2v14.8M11.5 3.2v14.8" stroke="#6a6c76" strokeWidth="1" />
-          <circle cx="17.8" cy="15.5" r="4.2" fill="#f4f4f7" stroke="#3f424b" strokeWidth="1.3" />
-          <path d="M20.8 18.6 22.5 20.3" stroke="#3f424b" strokeWidth="1.3" strokeLinecap="round" />
+          <rect x="3.1" y="2.7" width="12.8" height="14.9" fill="#eceef3" stroke="#474a52" strokeWidth="1.15" />
+          <path d="M3.1 7.2h12.8M3.1 11.8h12.8M7.3 2.7v14.9M11.6 2.7v14.9" stroke="#666a76" strokeWidth="0.92" />
+          <circle cx="17.4" cy="14.6" r="3.8" fill="#f7f8fb" stroke="#3f424b" strokeWidth="1.25" />
+          <path d="M20.1 17.3 22.2 19.4" stroke="#3f424b" strokeWidth="1.25" strokeLinecap="round" />
+          <path d="M16 14.6h2.8M17.4 13.2v2.8" stroke="#555861" strokeWidth="0.95" />
         </svg>
       );
     case "db-sync":
       return (
         <svg viewBox="0 0 24 24" className="wb-tool-icon" aria-hidden="true">
-          <ellipse cx="11.2" cy="5.6" rx="5.5" ry="2.4" fill="#ebedf2" stroke="#4d4f57" strokeWidth="1.2" />
-          <path d="M5.7 5.6v6.9c0 1.4 2.5 2.5 5.5 2.5s5.5-1.1 5.5-2.5V5.6" fill="#d8dbe4" stroke="#4d4f57" strokeWidth="1.2" />
-          <path d="M4 18.6h7.5" stroke="#3f424b" strokeWidth="1.2" strokeLinecap="round" />
-          <path d="M5.8 16.8 4 18.6l1.8 1.8" stroke="#3f424b" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M20 21H12.5" stroke="#3f424b" strokeWidth="1.2" strokeLinecap="round" />
-          <path d="m18.2 19.2 1.8 1.8-1.8 1.8" stroke="#3f424b" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+          <ellipse cx="12" cy="5.4" rx="5.2" ry="2.3" fill="#eceef3" stroke="#474a52" strokeWidth="1.15" />
+          <path d="M6.8 5.4v6.2c0 1.3 2.3 2.3 5.2 2.3s5.2-1 5.2-2.3V5.4" fill="#d7dae3" stroke="#474a52" strokeWidth="1.15" />
+          <path d="M6.8 8.5c.8.8 2.9 1.3 5.2 1.3s4.4-.5 5.2-1.3" fill="none" stroke="#666a76" strokeWidth="0.9" />
+          <path d="M4.2 19.1c1.2-1.4 2.6-2.1 4.6-2.1" stroke="#3f424b" strokeWidth="1.1" fill="none" />
+          <path d="m5.1 16.9-1.8 2.2 2.5.8" fill="none" stroke="#3f424b" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M19.8 20.6c-1.2 1.4-2.6 2.1-4.6 2.1" stroke="#3f424b" strokeWidth="1.1" fill="none" />
+          <path d="m18.9 22.8 1.8-2.2-2.5-.8" fill="none" stroke="#3f424b" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       );
     case "editor-folder":
