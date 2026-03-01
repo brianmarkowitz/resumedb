@@ -151,7 +151,11 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
   const [viewOverride, setViewOverride] = useState<{ signature: string; view: OutputTab } | null>(null);
 
   const resultSignature = getResultSignature(result);
-  const defaultView: OutputTab = result?.status === "error" ? "messages" : "result";
+  const defaultView: OutputTab = !result
+    ? "action"
+    : result.status === "error"
+      ? "messages"
+      : "result";
   const activeView =
     viewOverride && viewOverride.signature === resultSignature ? viewOverride.view : defaultView;
 

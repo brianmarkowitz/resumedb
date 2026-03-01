@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ResumeDB | Brian Workbench",
+  title: "ResumeDB | MySQL Workbench Style",
   description:
     "Interactive SQL workbench portfolio styled after a classic desktop database client.",
 };

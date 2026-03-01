@@ -471,7 +471,9 @@ export function Workbench() {
   const windowClassName = `wb-window${denseMode ? " wb-window--dense" : ""}`;
   const workAreaClassName = `wb-work-area${sidebarCollapsed ? " wb-work-area--sidebar-collapsed" : ""}`;
   const footerText =
-    displayMode === "standard_resume" ? "Standard Resume Opened." : "SQL Editor Opened.";
+    displayMode === "standard_resume"
+      ? "Standard Resume Opened. Inspired by MySQL Workbench UI."
+      : "SQL Editor Opened. Inspired by MySQL Workbench UI.";
 
   return (
     <main className="wb-page">
@@ -482,7 +484,7 @@ export function Workbench() {
             <span className="dot dot-yellow" />
             <span className="dot dot-green" />
           </div>
-          <h1>Resume Workbench</h1>
+          <h1>MySQL Workbench</h1>
           <div />
         </header>
 

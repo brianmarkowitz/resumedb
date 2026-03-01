@@ -398,7 +398,7 @@ body {
 .wb-work-area {
   min-height: 0;
   display: grid;
-  grid-template-columns: 378px minmax(0, 1fr);
+  grid-template-columns: 338px minmax(0, 1fr);
 }
 
 .wb-work-area--sidebar-collapsed {
