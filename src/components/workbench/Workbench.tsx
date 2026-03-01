@@ -144,6 +144,7 @@ export function Workbench() {
   );
 
   const [schemaSearch, setSchemaSearch] = useState("");
+  const [selectedSchemaObjectName, setSelectedSchemaObjectName] = useState<string | null>(null);
   const [navigatorTab, setNavigatorTab] = useState<NavigatorTab>("schemas");
   const [displayMode, setDisplayMode] = useState<DisplayMode>("workbench");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -584,6 +585,7 @@ export function Workbench() {
     setSidebarCollapsed(false);
     setDenseMode(false);
     setSchemaSearch("");
+    setSelectedSchemaObjectName(null);
     setTabs([
       {
         id: baseTabId,
@@ -602,6 +604,38 @@ export function Workbench() {
       openPresetInNewTab(preset, `Ran ${preset} narrative query from administration panel`);
     },
     [openPresetInNewTab],
+  );
+
+  const handleSelectSchemaObject = useCallback((objectName: string) => {
+    setSelectedSchemaObjectName(objectName);
+  }, []);
+
+  const handleOpenViewFromSchema = useCallback(
+    (viewName: string) => {
+      const sql = `SELECT * FROM ${viewName};`;
+      const result = executeQuery(sql, defaultMode);
+
+      setTabs((previous) =>
+        previous.map((tab) =>
+          tab.id === activeTabId
+            ? {
+                ...tab,
+                title: makeQueryTitleForSql(
+                  sql,
+                  previous.filter((item) => item.id !== activeTabId).map((item) => item.title),
+                ),
+                sql,
+                status: result.status,
+                result,
+              }
+            : tab,
+        ),
+      );
+
+      setSelectedSchemaObjectName(viewName);
+      setStatusNote(`Loaded and executed ${viewName} from schema browser`);
+    },
+    [activeTabId],
   );
 
   const executionSummary = activeTab?.result
@@ -837,8 +871,11 @@ export function Workbench() {
                   objects={schemaObjects}
                   search={schemaSearch}
                   panelMode={navigatorTab}
+                  selectedObjectName={selectedSchemaObjectName}
                   onSearchChange={setSchemaSearch}
                   onRunPreset={handleRunAdminAction}
+                  onSelectObject={handleSelectSchemaObject}
+                  onOpenView={handleOpenViewFromSchema}
                 />
               </aside>
 

@@ -9,8 +9,11 @@ type SchemaBrowserProps = {
   objects: SchemaObject[];
   search: string;
   panelMode: "schemas" | "administration";
+  selectedObjectName: string | null;
   onSearchChange: (value: string) => void;
   onRunPreset: (preset: PresetKey) => void;
+  onSelectObject: (objectName: string) => void;
+  onOpenView: (viewName: string) => void;
 };
 
 function groupByType(objects: SchemaObject[], type: SchemaObject["type"]): SchemaObject[] {
@@ -21,8 +24,11 @@ export function SchemaBrowser({
   objects,
   search,
   panelMode,
+  selectedObjectName,
   onSearchChange,
   onRunPreset,
+  onSelectObject,
+  onOpenView,
 }: SchemaBrowserProps) {
   const filteredObjects = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
@@ -125,7 +131,24 @@ export function SchemaBrowser({
                           <details>
                             <summary>
                               <span className="wb-tree-icon wb-tree-icon--view" />
-                              {view.name}
+                              <button
+                                type="button"
+                                className={`wb-tree-object-button${selectedObjectName === view.name ? " wb-tree-object-button--selected" : ""}`}
+                                title={view.name}
+                                onClick={(event) => {
+                                  event.preventDefault();
+                                  event.stopPropagation();
+                                  onSelectObject(view.name);
+                                }}
+                                onDoubleClick={(event) => {
+                                  event.preventDefault();
+                                  event.stopPropagation();
+                                  onSelectObject(view.name);
+                                  onOpenView(view.name);
+                                }}
+                              >
+                                {view.name}
+                              </button>
                             </summary>
                             <ul>
                               {(view.columns ?? []).map((column) => (

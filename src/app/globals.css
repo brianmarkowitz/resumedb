@@ -524,6 +524,40 @@ body {
   white-space: nowrap;
 }
 
+.wb-tree-object-button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  line-height: 1.2;
+  font-size: inherit;
+  padding: 0;
+  border-radius: 2px;
+}
+
+.wb-tree-object-button:hover {
+  text-decoration: underline;
+}
+
+.wb-tree-object-button:focus-visible {
+  outline: 1px solid #6d86be;
+  outline-offset: 1px;
+}
+
+.wb-tree-object-button--selected {
+  background: #d8dce9;
+  color: #273b68;
+  font-weight: 600;
+  padding: 0 2px;
+}
+
 .wb-schema-tree summary::-webkit-details-marker {
   display: none;
 }
