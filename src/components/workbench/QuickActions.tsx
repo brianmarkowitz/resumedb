@@ -1,11 +1,10 @@
 "use client";
 
-import type { HistoryItem, QueryMode, SavedQuery } from "@/lib/resumedb/types";
+import type { QueryMode, SavedQuery } from "@/lib/resumedb/types";
 
 type QuickActionsProps = {
   mode: QueryMode;
   savedQueries: SavedQuery[];
-  history: HistoryItem[];
   onRunSavedQuery: (savedQueryId: string) => void;
   onSaveCurrentQuery: () => void;
   onRunRecommended: () => void;
@@ -14,7 +13,6 @@ type QuickActionsProps = {
 export function QuickActions({
   mode,
   savedQueries,
-  history,
   onRunSavedQuery,
   onSaveCurrentQuery,
   onRunRecommended,
@@ -42,22 +40,6 @@ export function QuickActions({
           </li>
         ))}
       </ul>
-
-      <div className="history-block">
-        <h3>Query History</h3>
-        {!history.length && <p>No queries executed yet.</p>}
-        <ul>
-          {history.slice(0, 8).map((item) => (
-            <li key={item.id}>
-              <strong>{item.displayName}</strong>
-              <span>{item.timestamp}</span>
-              <span>
-                {item.status.toUpperCase()} • {item.durationMs}ms
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
     </section>
   );
 }

@@ -34,15 +34,6 @@ export type SchemaObject = {
   examples?: string[];
 };
 
-export type HistoryItem = {
-  id: string;
-  timestamp: string;
-  queryId: string;
-  displayName: string;
-  durationMs: number;
-  status: QueryStatus;
-};
-
 export type SavedQuery = {
   id: string;
   label: string;

@@ -9,12 +9,11 @@ import { SqlEditorTabs } from "@/components/workbench/SqlEditorTabs";
 import type { QueryTab } from "@/components/workbench/workbenchTypes";
 import { executeQuery, normalizeSql } from "@/lib/resumedb/executeQuery";
 import {
-  getQueryDefinitionById,
   getRecommendedQueries,
   getStarterQueries,
 } from "@/lib/resumedb/queryCatalog";
 import { schemaObjects } from "@/lib/resumedb/schema";
-import type { HistoryItem, QueryMode, SavedQuery } from "@/lib/resumedb/types";
+import type { QueryMode, SavedQuery } from "@/lib/resumedb/types";
 
 function makeTabId(): string {
   return `tab_${Math.random().toString(36).slice(2, 10)}`;
@@ -22,10 +21,6 @@ function makeTabId(): string {
 
 function makeSavedQueryId(): string {
   return `saved_${Math.random().toString(36).slice(2, 10)}`;
-}
-
-function nowStamp(): string {
-  return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 }
 
 function makeQueryTitle(index: number): string {
@@ -74,7 +69,6 @@ export function Workbench() {
     },
   ]);
   const [activeTabId, setActiveTabId] = useState<string>(() => tabs[0]?.id ?? "");
-  const [history, setHistory] = useState<HistoryItem[]>([]);
   const [savedQueries, setSavedQueries] = useState<SavedQuery[]>(() => {
     if (typeof window === "undefined") {
       return defaultSavedQueries;
@@ -113,32 +107,13 @@ export function Workbench() {
 
   const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? null;
 
-  const appendHistory = useCallback(
-    (queryId: string | null, displayName: string, durationMs: number, status: "ok" | "error") => {
-      setHistory((previous) => [
-        {
-          id: `hist_${Math.random().toString(36).slice(2, 10)}`,
-          timestamp: nowStamp(),
-          queryId: queryId ?? "ad-hoc",
-          displayName,
-          durationMs,
-          status,
-        },
-        ...previous,
-      ]);
-    },
-    [],
-  );
-
   const runActiveTab = useCallback(() => {
     const tab = tabs.find((item) => item.id === activeTabId);
     if (!tab) {
       return;
     }
 
-    const startedAt = performance.now();
     const result = executeQuery(tab.sql, mode);
-    const durationMs = Math.max(1, Math.round(performance.now() - startedAt));
 
     setTabs((previous) =>
       previous.map((item) =>
@@ -151,11 +126,7 @@ export function Workbench() {
           : item,
       ),
     );
-
-    const queryDef = result.queryId ? getQueryDefinitionById(result.queryId) : undefined;
-    const displayName = queryDef?.simpleLabel ?? tab.sql.slice(0, 48).replace(/\s+/g, " ").trim();
-    appendHistory(result.queryId, displayName || "Ad-hoc query", durationMs, result.status);
-  }, [activeTabId, appendHistory, mode, tabs]);
+  }, [activeTabId, mode, tabs]);
 
   const handleAddTab = useCallback(() => {
     const nextIndex = tabs.length + 1;
@@ -199,9 +170,7 @@ export function Workbench() {
         return;
       }
 
-      const startedAt = performance.now();
       const result = executeQuery(savedQuery.sql, mode);
-      const durationMs = Math.max(1, Math.round(performance.now() - startedAt));
       const newTab: QueryTab = {
         id: makeTabId(),
         title: makeQueryTitle(tabs.length + 1),
@@ -212,9 +181,8 @@ export function Workbench() {
 
       setTabs((previous) => [...previous, newTab]);
       setActiveTabId(newTab.id);
-      appendHistory(result.queryId, savedQuery.label, durationMs, result.status);
     },
-    [appendHistory, mode, savedQueries, tabs.length],
+    [mode, savedQueries, tabs.length],
   );
 
   const handleSaveCurrentQuery = useCallback(() => {
@@ -246,13 +214,10 @@ export function Workbench() {
 
   const handleRunRecommended = useCallback(() => {
     const newTabs: QueryTab[] = [];
-    const newHistory: HistoryItem[] = [];
 
     recommendedQueries.forEach((query, index) => {
       const sql = query.sqlTemplates[0] ?? "";
-      const startedAt = performance.now();
       const result = executeQuery(sql, mode);
-      const durationMs = Math.max(1, Math.round(performance.now() - startedAt));
       const tab: QueryTab = {
         id: makeTabId(),
         title: makeQueryTitle(tabs.length + index + 1),
@@ -262,20 +227,11 @@ export function Workbench() {
       };
 
       newTabs.push(tab);
-      newHistory.push({
-        id: `hist_${Math.random().toString(36).slice(2, 10)}`,
-        timestamp: nowStamp(),
-        queryId: result.queryId ?? query.id,
-        displayName: query.simpleLabel,
-        durationMs,
-        status: result.status,
-      });
     });
 
     if (newTabs.length) {
       setTabs((previous) => [...previous, ...newTabs]);
       setActiveTabId(newTabs[newTabs.length - 1].id);
-      setHistory((previous) => [...newHistory.reverse(), ...previous]);
     }
   }, [mode, recommendedQueries, tabs.length]);
 
@@ -312,7 +268,6 @@ export function Workbench() {
         <QuickActions
           mode={mode}
           savedQueries={savedQueries}
-          history={history}
           onRunSavedQuery={runSavedQuery}
           onSaveCurrentQuery={handleSaveCurrentQuery}
           onRunRecommended={handleRunRecommended}
