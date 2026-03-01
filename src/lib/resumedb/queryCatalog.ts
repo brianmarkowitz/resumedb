@@ -19,6 +19,7 @@ export const queryCatalog: QueryDefinition[] = [
   {
     id: "resume_one_page",
     simpleLabel: "Profile snapshot",
+    simpleHint: "Shows a concise one-page overview of Brian's background and strengths.",
     sqlTemplates: ["SELECT * FROM v_resume_one_page;"],
     matcher: (normalizedSql) =>
       normalizedSql === "select * from v_resume_one_page" ||
@@ -29,6 +30,7 @@ export const queryCatalog: QueryDefinition[] = [
   {
     id: "skills_matrix",
     simpleLabel: "Skills matrix",
+    simpleHint: "Ranks core skills by proficiency, years of experience, and recency.",
     sqlTemplates: [
       "SELECT skill, level, years, last_used FROM v_skills_matrix ORDER BY level DESC, years DESC;",
     ],
@@ -41,6 +43,7 @@ export const queryCatalog: QueryDefinition[] = [
   {
     id: "impact_highlights",
     simpleLabel: "Impact by metrics",
+    simpleHint: "Highlights measurable outcomes sorted by metric impact.",
     sqlTemplates: [
       "SELECT * FROM v_impact_highlights WHERE metric_value IS NOT NULL ORDER BY metric_value DESC;",
     ],
@@ -54,6 +57,7 @@ export const queryCatalog: QueryDefinition[] = [
   {
     id: "experience_timeline",
     simpleLabel: "Experience timeline",
+    simpleHint: "Lists roles over time with company, title, dates, and technology stack.",
     sqlTemplates: [
       "SELECT company, title, start_date, end_date, tech_stack FROM v_experience_timeline ORDER BY start_date DESC;",
     ],
@@ -66,6 +70,7 @@ export const queryCatalog: QueryDefinition[] = [
   {
     id: "best_work_reliability",
     simpleLabel: "Best work: reliability",
+    simpleHint: "Filters achievements to reliability-focused work and outcomes.",
     sqlTemplates: ["EXEC sp_best_work @theme = 'reliability';"],
     matcher: (normalizedSql, rawSql) => {
       const hasProc = normalizedSql.includes("sp_best_work");
@@ -78,6 +83,7 @@ export const queryCatalog: QueryDefinition[] = [
   {
     id: "best_work_governance",
     simpleLabel: "Best work: governance",
+    simpleHint: "Filters achievements to governance, standards, and data stewardship outcomes.",
     sqlTemplates: ["EXEC sp_best_work @theme = 'governance';"],
     matcher: (normalizedSql, rawSql) => {
       const hasProc = normalizedSql.includes("sp_best_work");

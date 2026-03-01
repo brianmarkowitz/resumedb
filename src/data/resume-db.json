@@ -144,7 +144,7 @@
       "domain": "Scientific Research",
       "start_year": 2018,
       "end_year": 2026,
-      "summary": "Migrated monolithic systems to AWS serverless architecture and modernized data access for clinical trial biospecimens.",
+      "summary": "Migrated monolithic systems to AWS serverless architecture and modernized data access for clinical trial sample records.",
       "theme_tags": ["scale", "reliability", "cost", "governance"],
       "tech_stack": ["AWS Lambda", "DynamoDB", "Athena", "OpenSearch", "CloudFormation"]
     },
@@ -183,7 +183,7 @@
     },
     {
       "id": "proj_ai_chat",
-      "project_name": "AI Chatbot for Biospecimen Repository",
+      "project_name": "AI Chatbot for Clinical Sample Repository",
       "client": "NIAID",
       "domain": "AI + Data Products",
       "start_year": 2023,
@@ -207,11 +207,11 @@
       "project_id": "proj_idpcc"
     },
     {
-      "id": "ach_biospecimens",
-      "impact_title": "Clinical-trial biospecimen accessibility",
-      "metric_name": "biospecimens indexed",
+      "id": "ach_trial_samples",
+      "impact_title": "Clinical-trial sample accessibility",
+      "metric_name": "sample records indexed",
       "metric_value": 4000000,
-      "metric_display": "4M+ biospecimens",
+      "metric_display": "4M+ sample records",
       "context": "Architected data model and ETL workflows enabling efficient discovery across concluded trials.",
       "tech_stack": ["ETL", "Data Modeling", "OpenSearch"],
       "year": 2025,

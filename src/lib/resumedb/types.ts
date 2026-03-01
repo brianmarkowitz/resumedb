@@ -17,6 +17,7 @@ export type QueryExecutionResult = {
 export type QueryDefinition = {
   id: string;
   simpleLabel: string;
+  simpleHint?: string;
   sqlTemplates: string[];
   matcher: (normalizedSql: string, rawSql: string) => boolean;
   resolverKey: "view" | "procedure";
@@ -37,6 +38,7 @@ export type SchemaObject = {
 export type SavedQuery = {
   id: string;
   label: string;
+  description?: string;
   sql: string;
 };
 

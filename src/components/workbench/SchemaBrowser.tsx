@@ -89,10 +89,22 @@ export function SchemaBrowser({
                       Tables
                     </summary>
                     <ul>
-                      {tables.map((table) => (
+                      {tables.map((table, index) => (
                         <li key={table.name}>
-                          <span className="wb-tree-icon wb-tree-icon--table" />
-                          {table.name}
+                          <details open={index === 0}>
+                            <summary>
+                              <span className="wb-tree-icon wb-tree-icon--table" />
+                              {table.name}
+                            </summary>
+                            <ul>
+                              {(table.columns ?? []).map((column) => (
+                                <li key={`${table.name}_${column}`}>
+                                  <span className="wb-tree-icon wb-tree-icon--column" />
+                                  {column}
+                                </li>
+                              ))}
+                            </ul>
+                          </details>
                         </li>
                       ))}
                     </ul>
@@ -108,8 +120,20 @@ export function SchemaBrowser({
                     <ul>
                       {views.map((view) => (
                         <li key={view.name}>
-                          <span className="wb-tree-icon wb-tree-icon--view" />
-                          {view.name}
+                          <details>
+                            <summary>
+                              <span className="wb-tree-icon wb-tree-icon--view" />
+                              {view.name}
+                            </summary>
+                            <ul>
+                              {(view.columns ?? []).map((column) => (
+                                <li key={`${view.name}_${column}`}>
+                                  <span className="wb-tree-icon wb-tree-icon--column" />
+                                  {column}
+                                </li>
+                              ))}
+                            </ul>
+                          </details>
                         </li>
                       ))}
                     </ul>
@@ -125,8 +149,22 @@ export function SchemaBrowser({
                     <ul>
                       {procedures.map((procedure) => (
                         <li key={procedure.name}>
-                          <span className="wb-tree-icon wb-tree-icon--function" />
-                          {procedure.name}
+                          <details>
+                            <summary>
+                              <span className="wb-tree-icon wb-tree-icon--function" />
+                              {procedure.name}
+                            </summary>
+                            {procedure.examples?.length ? (
+                              <ul>
+                                {procedure.examples.map((example) => (
+                                  <li key={example}>
+                                    <span className="wb-tree-icon wb-tree-icon--sql" />
+                                    {example}
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : null}
+                          </details>
                         </li>
                       ))}
                     </ul>
@@ -150,15 +188,6 @@ export function SchemaBrowser({
                   </details>
                 </li>
               </ul>
-            </details>
-          </li>
-
-          <li>
-            <details>
-              <summary>
-                <span className="wb-tree-icon wb-tree-icon--db" />
-                biospec
-              </summary>
             </details>
           </li>
         </ul>

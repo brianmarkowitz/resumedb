@@ -159,7 +159,9 @@ export function SqlEditorTabs({
             <option value="">Saved queries</option>
             {savedQueries.map((query) => (
               <option key={query.id} value={query.id}>
-                {mode === "simple" ? query.label : query.sql}
+                {mode === "simple"
+                  ? `${query.label}${query.description ? ` - ${query.description}` : ""}`
+                  : query.sql}
               </option>
             ))}
           </select>
@@ -199,7 +201,16 @@ export function SqlEditorTabs({
         />
       </div>
 
-      <div className="wb-query-status">{executionMessage}</div>
+      <div className="wb-editor-scrollbar" aria-hidden="true">
+        <span className="wb-editor-scrollbar-thumb" />
+      </div>
+
+      <div className="wb-query-status" aria-live="polite">
+        <span className="wb-query-metric">100%</span>
+        <span className="wb-query-divider" aria-hidden="true" />
+        <span className="wb-query-metric">1:1</span>
+        <span className="wb-query-status-text">{executionMessage}</span>
+      </div>
     </section>
   );
 }

@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SchemaBrowser } from "@/components/workbench/SchemaBrowser";
+import { ResultsPanel } from "@/components/workbench/ResultsPanel";
 import { SqlEditorTabs } from "@/components/workbench/SqlEditorTabs";
+import { StandardResume } from "@/components/workbench/StandardResume";
 import type { QueryTab } from "@/components/workbench/workbenchTypes";
 import { executeQuery, normalizeSql } from "@/lib/resumedb/executeQuery";
 import { getRecommendedQueries, getStarterQueries } from "@/lib/resumedb/queryCatalog";
@@ -45,7 +47,10 @@ function makeQueryTitleForSql(sql: string, existingTitles: string[]): string {
 }
 
 function makeSavedQueryLabel(sql: string, index: number): string {
-  const singleLineSql = sql.replace(/\s+/g, " ").trim();
+  const singleLineSql = sql
+    .replace(/--.*$/gm, " ")
+    .replace(/\s+/g, " ")
+    .trim();
   if (!singleLineSql) {
     return `Saved Query ${index}`;
   }
@@ -53,8 +58,35 @@ function makeSavedQueryLabel(sql: string, index: number): string {
   return singleLineSql.length > 50 ? `${singleLineSql.slice(0, 50)}...` : singleLineSql;
 }
 
+function inferSavedQueryDescription(sql: string): string {
+  const compactSql = sql.replace(/--.*$/gm, " ").replace(/\s+/g, " ").trim();
+
+  const fromMatch = compactSql.match(/\bfrom\s+([a-zA-Z0-9_.]+)/i);
+  if (fromMatch?.[1]) {
+    const target = fromMatch[1].split(".").pop() ?? fromMatch[1];
+    return `Shows data from ${target}.`;
+  }
+
+  const execMatch = compactSql.match(/\bexec(?:ute)?\s+([a-zA-Z0-9_.]+)/i);
+  if (execMatch?.[1]) {
+    const target = execMatch[1].split(".").pop() ?? execMatch[1];
+    return `Runs ${target} to return focused resume highlights.`;
+  }
+
+  return "Shows curated resume data from ResumeDB.";
+}
+
+function buildSavedQueryEditorSql(savedQuery: SavedQuery): string {
+  const description = (savedQuery.description ?? "").trim();
+  if (!description) {
+    return savedQuery.sql;
+  }
+
+  return [`-- ${description}`, savedQuery.sql.trim()].join("\n");
+}
+
 const savedQueryStorageKey = "resumedb_custom_saved_queries_v1";
-const defaultMode: QueryMode = "pro";
+const defaultMode: QueryMode = "simple";
 
 const presetSql = {
   onePage: "SELECT * FROM v_resume_one_page;",
@@ -67,17 +99,19 @@ const presetSql = {
 
 type PresetKey = keyof typeof presetSql;
 type NavigatorTab = "administration" | "schemas";
+type DisplayMode = "workbench" | "standard_resume";
 
 export function Workbench() {
   const starterQueries = useMemo(() => getStarterQueries(), []);
   const recommendedQueries = useMemo(() => getRecommendedQueries(), []);
 
-  const initialSql = `-- Brian bio sample query\n${starterQueries[0]?.sqlTemplates[0] ?? presetSql.onePage}`;
+  const initialSql = `-- Brian resume profile query\n${starterQueries[0]?.sqlTemplates[0] ?? presetSql.onePage}`;
   const defaultSavedQueries = useMemo<SavedQuery[]>(
     () =>
       starterQueries.map((query) => ({
         id: query.id,
         label: query.simpleLabel,
+        description: query.simpleHint ?? query.simpleLabel,
         sql: query.sqlTemplates[0] ?? "",
       })),
     [starterQueries],
@@ -89,6 +123,7 @@ export function Workbench() {
 
   const [schemaSearch, setSchemaSearch] = useState("");
   const [navigatorTab, setNavigatorTab] = useState<NavigatorTab>("schemas");
+  const [displayMode, setDisplayMode] = useState<DisplayMode>("workbench");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [denseMode, setDenseMode] = useState(false);
   const [statusNote, setStatusNote] = useState("Ready");
@@ -126,7 +161,15 @@ export function Workbench() {
           item.sql.trim().length > 0,
       );
 
-      return [...defaultSavedQueries, ...customSavedQueries];
+      const normalizedCustomSavedQueries = customSavedQueries.map((query) => ({
+        ...query,
+        description:
+          typeof query.description === "string" && query.description.trim().length > 0
+            ? query.description
+            : inferSavedQueryDescription(query.sql),
+      }));
+
+      return [...defaultSavedQueries, ...normalizedCustomSavedQueries];
     } catch {
       window.localStorage.removeItem(savedQueryStorageKey);
       return defaultSavedQueries;
@@ -193,7 +236,7 @@ export function Workbench() {
       {
         id: newTabId,
         title: makeQueryTitleForSql(presetSql.onePage, previous.map((tab) => tab.title)),
-        sql: `-- Brian bio sample query\n${presetSql.onePage}`,
+        sql: `-- Brian resume profile query\n${presetSql.onePage}`,
         status: "idle",
         result: null,
       },
@@ -242,22 +285,27 @@ export function Workbench() {
       }
 
       const result = executeQuery(savedQuery.sql, defaultMode);
-      const newTabId = makeTabId();
+      const sqlForEditor = buildSavedQueryEditorSql(savedQuery);
 
-      setTabs((previous) => [
-        ...previous,
-        {
-          id: newTabId,
-          title: makeQueryTitleForSql(savedQuery.sql, previous.map((tab) => tab.title)),
-          sql: savedQuery.sql,
-          status: result.status,
-          result,
-        },
-      ]);
-      setActiveTabId(newTabId);
-      setStatusNote(`Loaded saved query: ${savedQuery.label}`);
+      setTabs((previous) =>
+        previous.map((tab) =>
+          tab.id === activeTabId
+            ? {
+                ...tab,
+                title: makeQueryTitleForSql(
+                  sqlForEditor,
+                  previous.filter((item) => item.id !== activeTabId).map((item) => item.title),
+                ),
+                sql: sqlForEditor,
+                status: result.status,
+                result,
+              }
+            : tab,
+        ),
+      );
+      setStatusNote(`Loaded and executed saved query: ${savedQuery.label}`);
     },
-    [savedQueries],
+    [activeTabId, savedQueries],
   );
 
   const handleSaveCurrentQuery = useCallback(() => {
@@ -285,6 +333,7 @@ export function Workbench() {
         {
           id: makeSavedQueryId(),
           label: makeSavedQueryLabel(trimmedSql, previous.length + 1),
+          description: inferSavedQueryDescription(trimmedSql),
           sql: trimmedSql,
         },
       ];
@@ -386,6 +435,7 @@ export function Workbench() {
 
   const handleHome = useCallback(() => {
     const baseTabId = makeTabId();
+    setDisplayMode("workbench");
     setNavigatorTab("schemas");
     setSidebarCollapsed(false);
     setDenseMode(false);
@@ -394,7 +444,7 @@ export function Workbench() {
       {
         id: baseTabId,
         title: makeQueryTitleForSql(presetSql.onePage, []),
-        sql: `-- Brian bio sample query\n${presetSql.onePage}`,
+        sql: `-- Brian resume profile query\n${presetSql.onePage}`,
         status: "idle",
         result: null,
       },
@@ -420,6 +470,8 @@ export function Workbench() {
 
   const windowClassName = `wb-window${denseMode ? " wb-window--dense" : ""}`;
   const workAreaClassName = `wb-work-area${sidebarCollapsed ? " wb-work-area--sidebar-collapsed" : ""}`;
+  const footerText =
+    displayMode === "standard_resume" ? "Standard Resume Opened." : "SQL Editor Opened.";
 
   return (
     <main className="wb-page">
@@ -430,7 +482,7 @@ export function Workbench() {
             <span className="dot dot-yellow" />
             <span className="dot dot-green" />
           </div>
-          <h1>Brian Workbench</h1>
+          <h1>Resume Workbench</h1>
           <div />
         </header>
 
@@ -438,8 +490,32 @@ export function Workbench() {
           <button type="button" className="wb-home-btn" aria-label="Home" onClick={handleHome}>
             <span className="wb-glyph wb-glyph--home" />
           </button>
-          <div className="wb-connection-tab">resume(local-bmarko) - Brian bio sample loaded</div>
+          <div className="wb-connection-tab">resume(local-bmarko) - Warning - not supported</div>
           <div className="wb-window-icons">
+            <button
+              type="button"
+              className={`wb-view-toggle${displayMode === "standard_resume" ? " wb-view-toggle--active" : ""}`}
+              aria-label={
+                displayMode === "workbench"
+                  ? "Open standard resume view"
+                  : "Return to SQL workbench view"
+              }
+              onClick={() => {
+                setDisplayMode((previous) =>
+                  previous === "workbench" ? "standard_resume" : "workbench",
+                );
+                setStatusNote(
+                  displayMode === "workbench"
+                    ? "Opened standard resume view"
+                    : "Returned to SQL workbench view",
+                );
+              }}
+              title={
+                displayMode === "workbench" ? "Standard Resume" : "SQL Workbench"
+              }
+            >
+              {displayMode === "workbench" ? "Standard Resume" : "SQL Workbench"}
+            </button>
             <button
               type="button"
               className="wb-chrome-btn"
@@ -485,84 +561,97 @@ export function Workbench() {
           </div>
         </div>
 
-        <div className="wb-main-toolbar">
-          <div className="wb-icon-row">
-            <button type="button" className="wb-tool wb-tool--folder" onClick={handleLoadFirstSaved} title="Open first saved query" aria-label="Open first saved query" />
-            <button type="button" className="wb-tool wb-tool--script" onClick={handleInsertNarrativeTemplate} title="Insert resume narrative template" aria-label="Insert resume narrative template" />
-            <button type="button" className="wb-tool wb-tool--save" onClick={handleSaveCurrentQuery} title="Save current query" aria-label="Save current query" />
-            <button type="button" className="wb-tool wb-tool--db" onClick={() => openPresetInNewTab("onePage", "Opened one-page resume view")} title="Run one-page resume view" aria-label="Run one-page resume view" />
-            <button type="button" className="wb-tool wb-tool--lock" onClick={() => openPresetInNewTab("governance", "Opened governance highlights view")} title="Run governance highlights" aria-label="Run governance highlights" />
-            <button type="button" className="wb-tool wb-tool--search" onClick={() => {
-              setNavigatorTab("schemas");
-              setSchemaSearch("skill");
-              setStatusNote("Filtered schema objects to skills");
-            }} title="Filter schema to skills" aria-label="Filter schema to skills" />
-          </div>
-          <div className="wb-icon-row">
-            <button type="button" className="wb-tool wb-tool--chart" onClick={() => openPresetInNewTab("impact", "Opened impact metrics dashboard query")} title="Run impact highlights" aria-label="Run impact highlights" />
-            <button type="button" className="wb-tool wb-tool--gauge" onClick={() => openPresetInNewTab("skills", "Opened skills matrix query")} title="Run skills matrix" aria-label="Run skills matrix" />
-          </div>
-        </div>
-
-        <div className={workAreaClassName}>
-          <aside className="wb-sidebar">
-            <div className="wb-sidebar-tabs" role="tablist" aria-label="Navigator tabs">
-              <button
-                type="button"
-                role="tab"
-                className={`wb-side-tab${navigatorTab === "administration" ? " wb-side-tab--active" : ""}`}
-                aria-selected={navigatorTab === "administration"}
-                onClick={() => {
-                  setNavigatorTab("administration");
-                  setStatusNote("Switched to administration navigator");
-                }}
-              >
-                Administration
-              </button>
-              <button
-                type="button"
-                role="tab"
-                className={`wb-side-tab${navigatorTab === "schemas" ? " wb-side-tab--active" : ""}`}
-                aria-selected={navigatorTab === "schemas"}
-                onClick={() => {
+        {displayMode === "workbench" ? (
+          <>
+            <div className="wb-main-toolbar">
+              <div className="wb-icon-row">
+                <button type="button" className="wb-tool wb-tool--folder" onClick={handleLoadFirstSaved} title="Open first saved query" aria-label="Open first saved query" />
+                <button type="button" className="wb-tool wb-tool--script" onClick={handleInsertNarrativeTemplate} title="Insert resume narrative template" aria-label="Insert resume narrative template" />
+                <button type="button" className="wb-tool wb-tool--save" onClick={handleSaveCurrentQuery} title="Save current query" aria-label="Save current query" />
+                <button type="button" className="wb-tool wb-tool--db" onClick={() => openPresetInNewTab("onePage", "Opened one-page resume view")} title="Run one-page resume view" aria-label="Run one-page resume view" />
+                <button type="button" className="wb-tool wb-tool--lock" onClick={() => openPresetInNewTab("governance", "Opened governance highlights view")} title="Run governance highlights" aria-label="Run governance highlights" />
+                <button type="button" className="wb-tool wb-tool--search" onClick={() => {
                   setNavigatorTab("schemas");
-                  setStatusNote("Switched to schema navigator");
-                }}
-              >
-                Schemas
-              </button>
+                  setSchemaSearch("skill");
+                  setStatusNote("Filtered schema objects to skills");
+                }} title="Filter schema to skills" aria-label="Filter schema to skills" />
+              </div>
+              <div className="wb-icon-row">
+                <button type="button" className="wb-tool wb-tool--chart" onClick={() => openPresetInNewTab("impact", "Opened impact metrics dashboard query")} title="Run impact highlights" aria-label="Run impact highlights" />
+                <button type="button" className="wb-tool wb-tool--gauge" onClick={() => openPresetInNewTab("skills", "Opened skills matrix query")} title="Run skills matrix" aria-label="Run skills matrix" />
+              </div>
             </div>
 
-            <SchemaBrowser
-              objects={schemaObjects}
-              search={schemaSearch}
-              panelMode={navigatorTab}
-              onSearchChange={setSchemaSearch}
-              onRunPreset={handleRunAdminAction}
-            />
-          </aside>
+            <div className={workAreaClassName}>
+              <aside className="wb-sidebar">
+                <div className="wb-sidebar-tabs" role="tablist" aria-label="Navigator tabs">
+                  <button
+                    type="button"
+                    role="tab"
+                    className={`wb-side-tab${navigatorTab === "administration" ? " wb-side-tab--active" : ""}`}
+                    aria-selected={navigatorTab === "administration"}
+                    onClick={() => {
+                      setNavigatorTab("administration");
+                      setStatusNote("Switched to administration navigator");
+                    }}
+                  >
+                    Administration
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    className={`wb-side-tab${navigatorTab === "schemas" ? " wb-side-tab--active" : ""}`}
+                    aria-selected={navigatorTab === "schemas"}
+                    onClick={() => {
+                      setNavigatorTab("schemas");
+                      setStatusNote("Switched to schema navigator");
+                    }}
+                  >
+                    Schemas
+                  </button>
+                </div>
 
-          <section className="wb-editor-column">
-            <SqlEditorTabs
-              tabs={tabs}
-              activeTabId={activeTabId}
-              mode={defaultMode}
-              savedQueries={savedQueries}
-              executionMessage={executionMessage}
-              onActivateTab={setActiveTabId}
-              onAddTab={handleAddTab}
-              onCloseTab={handleCloseTab}
-              onSqlChange={handleSqlChange}
-              onRun={runActiveTab}
-              onRunSavedQuery={runSavedQuery}
-              onSaveCurrentQuery={handleSaveCurrentQuery}
-              onRunRecommended={handleRunRecommended}
-              onLoadFirstSavedQuery={handleLoadFirstSaved}
-              onInsertTimelineQuery={handleInsertTimelineQuery}
-              onClearCurrentQuery={handleClearActiveQuery}
-            />
-          </section>
-        </div>
+                <SchemaBrowser
+                  objects={schemaObjects}
+                  search={schemaSearch}
+                  panelMode={navigatorTab}
+                  onSearchChange={setSchemaSearch}
+                  onRunPreset={handleRunAdminAction}
+                />
+              </aside>
+
+              <section className="wb-editor-column">
+                <div className="wb-editor-primary">
+                  <SqlEditorTabs
+                    tabs={tabs}
+                    activeTabId={activeTabId}
+                    mode={defaultMode}
+                    savedQueries={savedQueries}
+                    executionMessage={executionMessage}
+                    onActivateTab={setActiveTabId}
+                    onAddTab={handleAddTab}
+                    onCloseTab={handleCloseTab}
+                    onSqlChange={handleSqlChange}
+                    onRun={runActiveTab}
+                    onRunSavedQuery={runSavedQuery}
+                    onSaveCurrentQuery={handleSaveCurrentQuery}
+                    onRunRecommended={handleRunRecommended}
+                    onLoadFirstSavedQuery={handleLoadFirstSaved}
+                    onInsertTimelineQuery={handleInsertTimelineQuery}
+                    onClearCurrentQuery={handleClearActiveQuery}
+                  />
+                </div>
+                <ResultsPanel
+                  key={activeTab?.result?.normalizedSql ?? activeTab?.id ?? "result_panel"}
+                  result={activeTab?.result ?? null}
+                />
+              </section>
+            </div>
+          </>
+        ) : (
+          <StandardResume />
+        )}
+        <footer className="wb-window-status">{footerText}</footer>
       </div>
     </main>
   );
