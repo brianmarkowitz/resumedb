@@ -26,6 +26,13 @@ function toTitleLabel(column: string): string {
     .replace(/\b\w/g, (value) => value.toUpperCase());
 }
 
+function toClassToken(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 function formatDateValue(value: string): string {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
     return value;
@@ -40,6 +47,7 @@ function formatDateValue(value: string): string {
 }
 
 function getColumnClass(column: string): string {
+  const classes = [`wb-col-${toClassToken(column)}`];
   const normalized = column.toLowerCase();
 
   if (
@@ -49,22 +57,63 @@ function getColumnClass(column: string): string {
     normalized === "level" ||
     normalized === "year"
   ) {
-    return "wb-col-numeric";
+    classes.push("wb-col-numeric");
   }
 
-  if (normalized === "content" || normalized === "evidence" || normalized === "context" || normalized === "rationale" || normalized === "summary") {
-    return "wb-col-long";
+  if (
+    normalized === "content" ||
+    normalized === "evidence" ||
+    normalized === "context" ||
+    normalized === "rationale" ||
+    normalized === "summary"
+  ) {
+    classes.push("wb-col-long");
   }
 
   if (normalized === "tech_stack" || normalized === "theme_tags") {
-    return "wb-col-list";
+    classes.push("wb-col-list");
   }
 
   if (normalized.endsWith("_date")) {
-    return "wb-col-date";
+    classes.push("wb-col-date");
   }
 
-  return "";
+  return classes.join(" ");
+}
+
+function getSectionPillClass(value: string): string {
+  const normalized = value.trim().toLowerCase();
+
+  switch (normalized) {
+    case "profile":
+      return "wb-section-pill wb-section-pill--profile";
+    case "experience":
+      return "wb-section-pill wb-section-pill--experience";
+    case "skill":
+      return "wb-section-pill wb-section-pill--skill";
+    case "impact":
+      return "wb-section-pill wb-section-pill--impact";
+    case "project":
+      return "wb-section-pill wb-section-pill--project";
+    case "education":
+      return "wb-section-pill wb-section-pill--education";
+    default:
+      return "wb-section-pill";
+  }
+}
+
+function getRowClass(row: Record<string, unknown>, isResumeNarrativeGrid: boolean): string {
+  if (!isResumeNarrativeGrid) {
+    return "wb-result-row";
+  }
+
+  const section = typeof row.section === "string" ? row.section : "";
+  const sectionToken = toClassToken(section);
+  if (!sectionToken) {
+    return "wb-result-row";
+  }
+
+  return `wb-result-row wb-result-row--${sectionToken}`;
 }
 
 function renderCellValue(value: unknown, column: string): ReactNode {
@@ -98,6 +147,22 @@ function renderCellValue(value: unknown, column: string): ReactNode {
     const trimmed = value.trim();
     if (!trimmed) {
       return <span className="wb-cell-empty">-</span>;
+    }
+
+    if (normalized === "section") {
+      return <span className={getSectionPillClass(trimmed)}>{trimmed}</span>;
+    }
+
+    if (normalized === "content") {
+      return <span className="wb-cell-content">{trimmed}</span>;
+    }
+
+    if (normalized === "evidence" || normalized === "context" || normalized === "summary") {
+      return <span className="wb-cell-evidence">{trimmed}</span>;
+    }
+
+    if (normalized === "impact_title" || normalized === "metric_display") {
+      return <span className="wb-cell-highlight">{trimmed}</span>;
     }
 
     if (normalized === "tech_stack" || normalized === "theme_tags") {
@@ -181,6 +246,11 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
 
   const resultRows = result?.rows ?? [];
   const resultColumns = result?.columns ?? [];
+  const isResumeNarrativeGrid =
+    resultColumns.length === 3 &&
+    resultColumns.includes("section") &&
+    resultColumns.includes("content") &&
+    resultColumns.includes("evidence");
   const explainRows = result?.explainPlan ?? [];
   const messageRows = result?.messages ?? [];
 
@@ -214,7 +284,9 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
                 : "Execute a query to load result rows."}
             </div>
 
-            <table className="wb-action-output-table">
+            <table
+              className={`wb-action-output-table ${isResumeNarrativeGrid ? "wb-action-output-table--resume" : "wb-action-output-table--standard"}`}
+            >
               <thead>
                 <tr>
                   {resultColumns.length ? (
@@ -237,7 +309,7 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
                   </tr>
                 )}
                 {resultRows.slice(0, 30).map((row, index) => (
-                  <tr key={`row_${index}`}>
+                  <tr key={`row_${index}`} className={getRowClass(row, isResumeNarrativeGrid)}>
                     {(resultColumns.length ? resultColumns : ["result"]).map((column) => (
                       <td key={`${index}_${column}`} className={getColumnClass(column)}>
                         {renderCellValue(row[column], column)}
