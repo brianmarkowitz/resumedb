@@ -1,99 +1,84 @@
 "use client";
 
-import clsx from "clsx";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import type { QueryExecutionResult } from "@/lib/resumedb/types";
 
 type ResultsPanelProps = {
   result: QueryExecutionResult | null;
 };
 
-type BottomTab = "results" | "plan" | "messages";
+type OutputRow = {
+  time: string;
+  action: string;
+  response: string;
+  duration: string;
+};
+
+function nowClock(): string {
+  return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+}
 
 export function ResultsPanel({ result }: ResultsPanelProps) {
-  const [activeBottomTab, setActiveBottomTab] = useState<BottomTab>("results");
+  const outputRows = useMemo<OutputRow[]>(() => {
+    if (!result) {
+      return [];
+    }
 
-  const hasRows = useMemo(() => (result?.rows?.length ?? 0) > 0, [result]);
+    const responseText =
+      result.status === "ok"
+        ? `${result.rows.length} row(s)`
+        : (result.messages[0] ?? "Error").slice(0, 120);
+
+    return [
+      {
+        time: nowClock(),
+        action: result.queryId ?? "ad-hoc_query",
+        response: responseText,
+        duration: result.status === "ok" ? "Completed" : "Failed",
+      },
+    ];
+  }, [result]);
 
   return (
-    <section className="panel results-panel" aria-label="Query output">
-      <div className="results-tabs" role="tablist" aria-label="Result tabs">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeBottomTab === "results"}
-          className={clsx("results-tab", activeBottomTab === "results" && "results-tab--active")}
-          onClick={() => setActiveBottomTab("results")}
-        >
-          Results
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeBottomTab === "plan"}
-          className={clsx("results-tab", activeBottomTab === "plan" && "results-tab--active")}
-          onClick={() => setActiveBottomTab("plan")}
-        >
-          Query Plan
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeBottomTab === "messages"}
-          className={clsx("results-tab", activeBottomTab === "messages" && "results-tab--active")}
-          onClick={() => setActiveBottomTab("messages")}
-        >
-          Messages
-        </button>
+    <section className="wb-action-output" aria-label="Action output">
+      <div className="wb-action-output-title">Action Output</div>
+
+      <div className="wb-action-output-table-wrap">
+        <table className="wb-action-output-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Action</th>
+              <th>Response</th>
+              <th>Duration / Fetch Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {!outputRows.length && (
+              <tr>
+                <td colSpan={4} className="wb-action-empty">
+                  Waiting for query execution...
+                </td>
+              </tr>
+            )}
+
+            {outputRows.map((row) => (
+              <tr key={`${row.time}-${row.action}`}>
+                <td>{row.time}</td>
+                <td>{row.action}</td>
+                <td>{row.response}</td>
+                <td>{row.duration}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      <div className="results-content">
-        {!result && <p className="empty-state">Run a query to inspect ResumeDB output.</p>}
-
-        {result && activeBottomTab === "results" && (
-          <>
-            {!hasRows ? (
-              <p className="empty-state">No rows returned.</p>
-            ) : (
-              <div className="table-wrapper">
-                <table>
-                  <thead>
-                    <tr>
-                      {result.columns.map((column) => (
-                        <th key={column}>{column}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {result.rows.map((row, rowIndex) => (
-                      <tr key={`row-${rowIndex}`}>
-                        {result.columns.map((column) => (
-                          <td key={`${rowIndex}-${column}`}>{String(row[column] ?? "")}</td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </>
-        )}
-
-        {result && activeBottomTab === "plan" && (
-          <ol className="text-list">
-            {result.explainPlan.map((line, index) => (
-              <li key={`plan-${index}`}>{line}</li>
-            ))}
-          </ol>
-        )}
-
-        {result && activeBottomTab === "messages" && (
-          <ul className="text-list">
-            {result.messages.map((line, index) => (
-              <li key={`msg-${index}`}>{line}</li>
-            ))}
-          </ul>
-        )}
+      <div className="wb-action-placeholders" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+        <span />
       </div>
     </section>
   );

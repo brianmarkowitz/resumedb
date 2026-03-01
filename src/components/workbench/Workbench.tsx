@@ -1,17 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ModeToggle } from "@/components/workbench/ModeToggle";
-import { QuickActions } from "@/components/workbench/QuickActions";
 import { ResultsPanel } from "@/components/workbench/ResultsPanel";
 import { SchemaBrowser } from "@/components/workbench/SchemaBrowser";
 import { SqlEditorTabs } from "@/components/workbench/SqlEditorTabs";
 import type { QueryTab } from "@/components/workbench/workbenchTypes";
 import { executeQuery, normalizeSql } from "@/lib/resumedb/executeQuery";
-import {
-  getRecommendedQueries,
-  getStarterQueries,
-} from "@/lib/resumedb/queryCatalog";
+import { getRecommendedQueries, getStarterQueries } from "@/lib/resumedb/queryCatalog";
 import { schemaObjects } from "@/lib/resumedb/schema";
 import type { QueryMode, SavedQuery } from "@/lib/resumedb/types";
 
@@ -24,7 +19,7 @@ function makeSavedQueryId(): string {
 }
 
 function makeQueryTitle(index: number): string {
-  return `Query ${index}`;
+  return `biospec_organism_pivot ${index === 1 ? "" : `(${index})`}`.trim();
 }
 
 function makeSavedQueryLabel(sql: string, index: number): string {
@@ -33,16 +28,18 @@ function makeSavedQueryLabel(sql: string, index: number): string {
     return `Saved Query ${index}`;
   }
 
-  return singleLineSql.length > 52 ? `${singleLineSql.slice(0, 52)}...` : singleLineSql;
+  return singleLineSql.length > 50 ? `${singleLineSql.slice(0, 50)}...` : singleLineSql;
 }
 
 const savedQueryStorageKey = "resumedb_custom_saved_queries_v1";
+const defaultMode: QueryMode = "pro";
 
 export function Workbench() {
   const starterQueries = useMemo(() => getStarterQueries(), []);
   const recommendedQueries = useMemo(() => getRecommendedQueries(), []);
 
-  const initialSql = starterQueries[0]?.sqlTemplates[0] ?? "SELECT * FROM v_resume_one_page;";
+  const initialSql =
+    starterQueries[0]?.sqlTemplates[0] ?? "SELECT * FROM v_resume_one_page;";
   const defaultSavedQueries = useMemo<SavedQuery[]>(
     () =>
       starterQueries.map((query) => ({
@@ -57,12 +54,11 @@ export function Workbench() {
     [defaultSavedQueries],
   );
 
-  const [mode, setMode] = useState<QueryMode>("simple");
   const [schemaSearch, setSchemaSearch] = useState("");
   const [tabs, setTabs] = useState<QueryTab[]>([
     {
       id: makeTabId(),
-      title: "Query 1",
+      title: makeQueryTitle(1),
       sql: initialSql,
       status: "idle",
       result: null,
@@ -101,11 +97,33 @@ export function Workbench() {
   });
 
   useEffect(() => {
-    const customSavedQueries = savedQueries.filter((query) => !defaultSavedQueryIds.has(query.id));
-    window.localStorage.setItem(savedQueryStorageKey, JSON.stringify(customSavedQueries));
+    const customSavedQueries = savedQueries.filter(
+      (query) => !defaultSavedQueryIds.has(query.id),
+    );
+    window.localStorage.setItem(
+      savedQueryStorageKey,
+      JSON.stringify(customSavedQueries),
+    );
   }, [defaultSavedQueryIds, savedQueries]);
 
   const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? null;
+
+  const runQuerySqlInNewTab = useCallback(
+    (sql: string, titleOverride?: string) => {
+      const result = executeQuery(sql, defaultMode);
+      const newTab: QueryTab = {
+        id: makeTabId(),
+        title: titleOverride ?? makeQueryTitle(tabs.length + 1),
+        sql,
+        status: result.status,
+        result,
+      };
+
+      setTabs((previous) => [...previous, newTab]);
+      setActiveTabId(newTab.id);
+    },
+    [tabs.length],
+  );
 
   const runActiveTab = useCallback(() => {
     const tab = tabs.find((item) => item.id === activeTabId);
@@ -113,7 +131,7 @@ export function Workbench() {
       return;
     }
 
-    const result = executeQuery(tab.sql, mode);
+    const result = executeQuery(tab.sql, defaultMode);
 
     setTabs((previous) =>
       previous.map((item) =>
@@ -126,7 +144,7 @@ export function Workbench() {
           : item,
       ),
     );
-  }, [activeTabId, mode, tabs]);
+  }, [activeTabId, tabs]);
 
   const handleAddTab = useCallback(() => {
     const nextIndex = tabs.length + 1;
@@ -170,19 +188,9 @@ export function Workbench() {
         return;
       }
 
-      const result = executeQuery(savedQuery.sql, mode);
-      const newTab: QueryTab = {
-        id: makeTabId(),
-        title: makeQueryTitle(tabs.length + 1),
-        sql: savedQuery.sql,
-        status: result.status,
-        result,
-      };
-
-      setTabs((previous) => [...previous, newTab]);
-      setActiveTabId(newTab.id);
+      runQuerySqlInNewTab(savedQuery.sql, makeQueryTitle(tabs.length + 1));
     },
-    [mode, savedQueries, tabs.length],
+    [runQuerySqlInNewTab, savedQueries, tabs.length],
   );
 
   const handleSaveCurrentQuery = useCallback(() => {
@@ -196,7 +204,9 @@ export function Workbench() {
     }
 
     setSavedQueries((previous) => {
-      const duplicate = previous.some((query) => normalizeSql(query.sql) === normalizeSql(trimmedSql));
+      const duplicate = previous.some(
+        (query) => normalizeSql(query.sql) === normalizeSql(trimmedSql),
+      );
       if (duplicate) {
         return previous;
       }
@@ -217,7 +227,7 @@ export function Workbench() {
 
     recommendedQueries.forEach((query, index) => {
       const sql = query.sqlTemplates[0] ?? "";
-      const result = executeQuery(sql, mode);
+      const result = executeQuery(sql, defaultMode);
       const tab: QueryTab = {
         id: makeTabId(),
         title: makeQueryTitle(tabs.length + index + 1),
@@ -233,45 +243,82 @@ export function Workbench() {
       setTabs((previous) => [...previous, ...newTabs]);
       setActiveTabId(newTabs[newTabs.length - 1].id);
     }
-  }, [mode, recommendedQueries, tabs.length]);
+  }, [recommendedQueries, tabs.length]);
 
   return (
-    <main className="workbench-root">
-      <header className="workbench-header">
-        <div>
-          <p className="eyebrow">ResumeDB Workbench</p>
-          <h1>Brian M. Markowitz | SQL Portfolio Console</h1>
-          <p className="subtitle">
-            Explore architecture, impact, and leadership through queryable resume views.
-          </p>
+    <main className="wb-page">
+      <div className="wb-window">
+        <header className="wb-titlebar">
+          <div className="wb-traffic-lights" aria-hidden="true">
+            <span className="dot dot-red" />
+            <span className="dot dot-yellow" />
+            <span className="dot dot-green" />
+          </div>
+          <h1>MySQL Workbench</h1>
+        </header>
+
+        <div className="wb-connection-strip" role="presentation">
+          <button type="button" className="wb-home-btn" aria-label="Home">
+            ⌂
+          </button>
+          <div className="wb-connection-tab">biospec(local-bmarko) - Warning - not supported</div>
+          <div className="wb-window-icons" aria-hidden="true">
+            <span>⚙</span>
+            <span>▭</span>
+            <span>▯</span>
+            <span>▮</span>
+          </div>
         </div>
-        <ModeToggle mode={mode} onChange={setMode} />
-      </header>
 
-      <div className="workbench-grid">
-        <SchemaBrowser objects={schemaObjects} search={schemaSearch} onSearchChange={setSchemaSearch} />
+        <div className="wb-main-toolbar" aria-hidden="true">
+          <div className="wb-icon-row">
+            <span>🗂</span>
+            <span>🧾</span>
+            <span>🗄</span>
+            <span>⛃</span>
+            <span>🧰</span>
+            <span>🔎</span>
+          </div>
+          <div className="wb-icon-row">
+            <span>📈</span>
+            <span>🧭</span>
+          </div>
+        </div>
 
-        <section className="center-column">
-          <SqlEditorTabs
-            tabs={tabs}
-            activeTabId={activeTabId}
-            mode={mode}
-            onActivateTab={setActiveTabId}
-            onAddTab={handleAddTab}
-            onCloseTab={handleCloseTab}
-            onSqlChange={handleSqlChange}
-            onRun={runActiveTab}
-          />
-          <ResultsPanel result={activeTab?.result ?? null} />
-        </section>
+        <div className="wb-work-area">
+          <aside className="wb-sidebar">
+            <div className="wb-sidebar-tabs" role="tablist" aria-label="Navigator tabs">
+              <button type="button" role="tab" className="wb-side-tab">
+                Administration
+              </button>
+              <button type="button" role="tab" className="wb-side-tab wb-side-tab--active">
+                Schemas
+              </button>
+            </div>
 
-        <QuickActions
-          mode={mode}
-          savedQueries={savedQueries}
-          onRunSavedQuery={runSavedQuery}
-          onSaveCurrentQuery={handleSaveCurrentQuery}
-          onRunRecommended={handleRunRecommended}
-        />
+            <SchemaBrowser objects={schemaObjects} search={schemaSearch} onSearchChange={setSchemaSearch} />
+
+            <div className="wb-sidebar-footer">SQL Editor Opened.</div>
+          </aside>
+
+          <section className="wb-editor-column">
+            <SqlEditorTabs
+              tabs={tabs}
+              activeTabId={activeTabId}
+              mode={defaultMode}
+              savedQueries={savedQueries}
+              onActivateTab={setActiveTabId}
+              onAddTab={handleAddTab}
+              onCloseTab={handleCloseTab}
+              onSqlChange={handleSqlChange}
+              onRun={runActiveTab}
+              onRunSavedQuery={runSavedQuery}
+              onSaveCurrentQuery={handleSaveCurrentQuery}
+              onRunRecommended={handleRunRecommended}
+            />
+            <ResultsPanel result={activeTab?.result ?? null} />
+          </section>
+        </div>
       </div>
     </main>
   );
