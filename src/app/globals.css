@@ -36,6 +36,11 @@ body {
   font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
 
+.wb-is-resizing,
+.wb-is-resizing * {
+  user-select: none;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -481,6 +486,7 @@ body {
 
 .wb-work-area {
   min-height: 0;
+  min-width: 0;
   display: grid;
   grid-template-columns: 338px minmax(0, 1fr);
 }
@@ -491,10 +497,60 @@ body {
 
 .wb-sidebar {
   min-height: 0;
+  min-width: 0;
   border-right: 1px solid var(--wb-border);
   background: #c2c1c8;
   display: grid;
   grid-template-rows: 41px minmax(0, 1fr);
+}
+
+.wb-splitter {
+  position: relative;
+  background: #c7c6cd;
+  z-index: 5;
+}
+
+.wb-splitter::before {
+  content: "";
+  position: absolute;
+  border-radius: 2px;
+  background: #a6a5ae;
+}
+
+.wb-splitter--vertical {
+  cursor: col-resize;
+  border-left: 1px solid #adaeb6;
+  border-right: 1px solid #d7d7dd;
+}
+
+.wb-splitter--vertical::before {
+  top: 50%;
+  left: 1px;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 26px;
+}
+
+.wb-splitter--horizontal {
+  cursor: row-resize;
+  border-top: 1px solid #adaeb6;
+  border-bottom: 1px solid #d7d7dd;
+}
+
+.wb-splitter--horizontal::before {
+  left: 50%;
+  top: 1px;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 2px;
+}
+
+.wb-splitter--active {
+  background: #c2c1c8;
+}
+
+.wb-splitter--active::before {
+  background: #8b8a95;
 }
 
 .wb-sidebar-tabs {
@@ -743,6 +799,7 @@ details[open] > summary > .wb-tree-icon--caret {
 
 .wb-editor-column {
   min-height: 0;
+  min-width: 0;
   display: grid;
   grid-template-rows: minmax(0, 1fr) 215px;
 }

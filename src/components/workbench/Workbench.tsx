@@ -1,6 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import { SchemaBrowser } from "@/components/workbench/SchemaBrowser";
 import { ResultsPanel } from "@/components/workbench/ResultsPanel";
 import { SqlEditorTabs } from "@/components/workbench/SqlEditorTabs";
@@ -86,7 +94,15 @@ function buildSavedQueryEditorSql(savedQuery: SavedQuery): string {
 }
 
 const savedQueryStorageKey = "resumedb_custom_saved_queries_v1";
+const sidebarWidthStorageKey = "resumedb_sidebar_width_v1";
+const outputHeightStorageKey = "resumedb_output_height_v1";
 const defaultMode: QueryMode = "simple";
+const defaultSidebarWidth = 338;
+const defaultOutputHeight = 215;
+const minSidebarWidth = 220;
+const minEditorWidth = 420;
+const minOutputHeight = 150;
+const minEditorHeight = 220;
 
 const presetSql = {
   onePage: "SELECT * FROM v_resume_one_page;",
@@ -100,6 +116,11 @@ const presetSql = {
 type PresetKey = keyof typeof presetSql;
 type NavigatorTab = "administration" | "schemas";
 type DisplayMode = "workbench" | "standard_resume";
+type ActiveResize = "sidebar" | "output" | null;
+
+function clampValue(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
 
 export function Workbench() {
   const starterQueries = useMemo(() => getStarterQueries(), []);
@@ -126,7 +147,31 @@ export function Workbench() {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("workbench");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [denseMode, setDenseMode] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(() => {
+    if (typeof window === "undefined") {
+      return defaultSidebarWidth;
+    }
+
+    const storedValue = Number(window.localStorage.getItem(sidebarWidthStorageKey));
+    return Number.isFinite(storedValue) && storedValue > 0
+      ? Math.round(storedValue)
+      : defaultSidebarWidth;
+  });
+  const [outputHeight, setOutputHeight] = useState(() => {
+    if (typeof window === "undefined") {
+      return defaultOutputHeight;
+    }
+
+    const storedValue = Number(window.localStorage.getItem(outputHeightStorageKey));
+    return Number.isFinite(storedValue) && storedValue > 0
+      ? Math.round(storedValue)
+      : defaultOutputHeight;
+  });
+  const [activeResize, setActiveResize] = useState<ActiveResize>(null);
+  const [isCompactViewport, setIsCompactViewport] = useState(false);
   const [statusNote, setStatusNote] = useState("Ready");
+  const workAreaRef = useRef<HTMLDivElement | null>(null);
+  const editorColumnRef = useRef<HTMLElement | null>(null);
   const [tabs, setTabs] = useState<QueryTab[]>([
     {
       id: makeTabId(),
@@ -180,6 +225,107 @@ export function Workbench() {
     const customSavedQueries = savedQueries.filter((query) => !defaultSavedQueryIds.has(query.id));
     window.localStorage.setItem(savedQueryStorageKey, JSON.stringify(customSavedQueries));
   }, [defaultSavedQueryIds, savedQueries]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(max-width: 1100px)");
+    const handleViewportChange = () => setIsCompactViewport(mediaQuery.matches);
+    handleViewportChange();
+    mediaQuery.addEventListener("change", handleViewportChange);
+
+    return () => mediaQuery.removeEventListener("change", handleViewportChange);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    window.localStorage.setItem(sidebarWidthStorageKey, String(sidebarWidth));
+  }, [sidebarWidth]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    window.localStorage.setItem(outputHeightStorageKey, String(outputHeight));
+  }, [outputHeight]);
+
+  useEffect(() => {
+    if (!activeResize) {
+      return;
+    }
+
+    const handlePointerMove = (event: PointerEvent) => {
+      if (activeResize === "sidebar") {
+        if (sidebarCollapsed) {
+          return;
+        }
+
+        const rect = workAreaRef.current?.getBoundingClientRect();
+        if (!rect) {
+          return;
+        }
+
+        const maxSidebarWidth = Math.max(minSidebarWidth, rect.width - minEditorWidth);
+        const nextSidebarWidth = clampValue(event.clientX - rect.left, minSidebarWidth, maxSidebarWidth);
+        setSidebarWidth(Math.round(nextSidebarWidth));
+        return;
+      }
+
+      const rect = editorColumnRef.current?.getBoundingClientRect();
+      if (!rect) {
+        return;
+      }
+
+      const maxOutputHeight = Math.max(minOutputHeight, rect.height - minEditorHeight);
+      const nextOutputHeight = clampValue(rect.bottom - event.clientY, minOutputHeight, maxOutputHeight);
+      setOutputHeight(Math.round(nextOutputHeight));
+    };
+
+    const handlePointerUp = () => {
+      setActiveResize(null);
+      setStatusNote("Updated workbench panel sizing");
+    };
+
+    document.body.classList.add("wb-is-resizing");
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+
+    return () => {
+      document.body.classList.remove("wb-is-resizing");
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+    };
+  }, [activeResize, sidebarCollapsed]);
+
+  const handleSidebarResizeStart = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      if (event.button !== 0 || isCompactViewport || sidebarCollapsed) {
+        return;
+      }
+
+      event.preventDefault();
+      setActiveResize("sidebar");
+    },
+    [isCompactViewport, sidebarCollapsed],
+  );
+
+  const handleOutputResizeStart = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      if (event.button !== 0 || isCompactViewport) {
+        return;
+      }
+
+      event.preventDefault();
+      setActiveResize("output");
+    },
+    [isCompactViewport],
+  );
 
   const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? null;
 
@@ -470,6 +616,20 @@ export function Workbench() {
 
   const windowClassName = `wb-window${denseMode ? " wb-window--dense" : ""}`;
   const workAreaClassName = `wb-work-area${sidebarCollapsed ? " wb-work-area--sidebar-collapsed" : ""}`;
+  const canResizeWorkbench = !isCompactViewport;
+  const showSidebarSplitter = canResizeWorkbench && !sidebarCollapsed;
+  const workAreaStyle: CSSProperties | undefined = canResizeWorkbench
+    ? {
+        gridTemplateColumns: showSidebarSplitter
+          ? `${sidebarWidth}px 6px minmax(0, 1fr)`
+          : "0 minmax(0, 1fr)",
+      }
+    : undefined;
+  const editorColumnStyle: CSSProperties | undefined = canResizeWorkbench
+    ? {
+        gridTemplateRows: `minmax(0, 1fr) 6px ${outputHeight}px`,
+      }
+    : undefined;
   const footerText =
     displayMode === "standard_resume"
       ? "Standard Resume Opened. MySQL Workbench-inspired ResumeDB replica."
@@ -582,7 +742,7 @@ export function Workbench() {
               </div>
             </div>
 
-            <div className={workAreaClassName}>
+            <div className={workAreaClassName} ref={workAreaRef} style={workAreaStyle}>
               <aside className="wb-sidebar">
                 <div className="wb-sidebar-tabs" role="tablist" aria-label="Navigator tabs">
                   <button
@@ -620,7 +780,17 @@ export function Workbench() {
                 />
               </aside>
 
-              <section className="wb-editor-column">
+              {showSidebarSplitter ? (
+                <div
+                  role="separator"
+                  aria-orientation="vertical"
+                  aria-label="Resize schema browser"
+                  className={`wb-splitter wb-splitter--vertical${activeResize === "sidebar" ? " wb-splitter--active" : ""}`}
+                  onPointerDown={handleSidebarResizeStart}
+                />
+              ) : null}
+
+              <section className="wb-editor-column" ref={editorColumnRef} style={editorColumnStyle}>
                 <div className="wb-editor-primary">
                   <SqlEditorTabs
                     tabs={tabs}
@@ -641,6 +811,15 @@ export function Workbench() {
                     onClearCurrentQuery={handleClearActiveQuery}
                   />
                 </div>
+                {canResizeWorkbench ? (
+                  <div
+                    role="separator"
+                    aria-orientation="horizontal"
+                    aria-label="Resize output panel"
+                    className={`wb-splitter wb-splitter--horizontal${activeResize === "output" ? " wb-splitter--active" : ""}`}
+                    onPointerDown={handleOutputResizeStart}
+                  />
+                ) : null}
                 <ResultsPanel
                   key={activeTab?.result?.normalizedSql ?? activeTab?.id ?? "result_panel"}
                   result={activeTab?.result ?? null}
