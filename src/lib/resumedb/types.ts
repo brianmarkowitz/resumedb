@@ -43,6 +43,12 @@ export type HistoryItem = {
   status: QueryStatus;
 };
 
+export type SavedQuery = {
+  id: string;
+  label: string;
+  sql: string;
+};
+
 export type ResumeDbData = {
   person: Row[];
   skills: Row[];
