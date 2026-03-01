@@ -11,6 +11,7 @@ type SqlEditorTabsProps = {
   activeTabId: string;
   mode: "simple" | "pro";
   savedQueries: SavedQuery[];
+  executionMessage: string;
   onActivateTab: (tabId: string) => void;
   onAddTab: () => void;
   onCloseTab: (tabId: string) => void;
@@ -19,6 +20,9 @@ type SqlEditorTabsProps = {
   onRunSavedQuery: (savedQueryId: string) => void;
   onSaveCurrentQuery: () => void;
   onRunRecommended: () => void;
+  onLoadFirstSavedQuery: () => void;
+  onInsertTimelineQuery: () => void;
+  onClearCurrentQuery: () => void;
 };
 
 export function SqlEditorTabs({
@@ -26,6 +30,7 @@ export function SqlEditorTabs({
   activeTabId,
   mode,
   savedQueries,
+  executionMessage,
   onActivateTab,
   onAddTab,
   onCloseTab,
@@ -34,6 +39,9 @@ export function SqlEditorTabs({
   onRunSavedQuery,
   onSaveCurrentQuery,
   onRunRecommended,
+  onLoadFirstSavedQuery,
+  onInsertTimelineQuery,
+  onClearCurrentQuery,
 }: SqlEditorTabsProps) {
   const activeTab = tabs.find((tab) => tab.id === activeTabId);
 
@@ -76,7 +84,7 @@ export function SqlEditorTabs({
                 }}
                 aria-label={`Close ${tab.title}`}
               >
-                x
+                ×
               </button>
             )}
           </div>
@@ -87,21 +95,52 @@ export function SqlEditorTabs({
       </div>
 
       <div className="wb-query-toolbar">
-        <div className="wb-query-toolbar-icons" aria-hidden="true">
-          <span>📁</span>
-          <span>💾</span>
-          <span>⚡</span>
-          <span>⏱</span>
-          <span>🧹</span>
+        <div className="wb-query-toolbar-icons">
+          <button
+            type="button"
+            className="wb-tool wb-tool--folder"
+            aria-label="Open first saved query"
+            title="Open first saved query"
+            onClick={onLoadFirstSavedQuery}
+          />
+          <button
+            type="button"
+            className="wb-tool wb-tool--save"
+            aria-label="Save current query"
+            title="Save current query"
+            onClick={onSaveCurrentQuery}
+          />
+          <button
+            type="button"
+            className="wb-tool wb-tool--bolt"
+            aria-label="Execute query"
+            title="Execute query"
+            onClick={onRun}
+          />
+          <button
+            type="button"
+            className="wb-tool wb-tool--clock"
+            aria-label="Insert timeline query"
+            title="Insert timeline query"
+            onClick={onInsertTimelineQuery}
+          />
+          <button
+            type="button"
+            className="wb-tool wb-tool--brush"
+            aria-label="Clear current query"
+            title="Clear current query"
+            onClick={onClearCurrentQuery}
+          />
         </div>
 
         <label className="wb-limit-control">
-          <span>Limit to 100 rows</span>
+          <span>Limit to</span>
           <select defaultValue="100" aria-label="Limit rows">
             <option value="50">50</option>
             <option value="100">100</option>
             <option value="500">500</option>
           </select>
+          <span>rows</span>
         </label>
 
         <div className="wb-query-actions">
@@ -124,16 +163,13 @@ export function SqlEditorTabs({
               </option>
             ))}
           </select>
-          <button type="button" onClick={onSaveCurrentQuery} aria-label="Save current query" title="Save current query">
-            ★
-          </button>
           <button
             type="button"
             onClick={onRunRecommended}
             aria-label="Run recommended queries"
             title="Run recommended queries"
           >
-            ☆
+            ★
           </button>
           <button type="button" onClick={onRun} aria-label="Execute query" title="Run (Cmd/Ctrl + Enter)">
             ▶
@@ -148,7 +184,7 @@ export function SqlEditorTabs({
           onChange={(value) => onSqlChange(activeTabId, value ?? "")}
           options={{
             minimap: { enabled: false },
-            fontSize: 32,
+            fontSize: 16,
             fontFamily: "Menlo, Monaco, 'Courier New', monospace",
             lineNumbersMinChars: 2,
             scrollBeyondLastLine: false,
@@ -163,10 +199,7 @@ export function SqlEditorTabs({
         />
       </div>
 
-      <div className="wb-query-status">
-        <span>100%</span>
-        <span>1:1</span>
-      </div>
+      <div className="wb-query-status">{executionMessage}</div>
     </section>
   );
 }

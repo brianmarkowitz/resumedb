@@ -6,14 +6,15 @@ test.describe("ResumeDB workbench", () => {
 
     await expect(page.getByRole("heading", { name: /mysql workbench/i })).toBeVisible();
 
-    await page.getByRole("button", { name: /execute query/i }).click();
-    await expect(page.getByText(/row\(s\)/i).first()).toBeVisible();
+    await page.getByTitle("Run (Cmd/Ctrl + Enter)").click();
+    await expect(page.locator(".wb-query-status")).toContainText(/row\(s\) returned/i);
   });
 
   test("runs recommended query sequence", async ({ page }) => {
     await page.goto("/");
 
-    await page.getByRole("button", { name: /run recommended queries/i }).click();
-    await expect(page.getByText(/best_work_reliability/i)).toBeVisible();
+    await page.getByRole("button", { name: /run recommended queries/i }).first().click();
+    await expect(page.locator(".wb-query-status")).toContainText(/ran recommended resume storyline queries/i);
+    await expect(page.locator(".wb-query-tab")).toHaveCount(6);
   });
 });
