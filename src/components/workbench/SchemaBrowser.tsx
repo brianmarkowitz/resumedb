@@ -98,9 +98,11 @@ export function SchemaBrowser({
                             </summary>
                             <ul>
                               {(table.columns ?? []).map((column) => (
-                                <li key={`${table.name}_${column}`}>
+                                <li key={`${table.name}_${column}`} className="wb-tree-leaf">
                                   <span className="wb-tree-icon wb-tree-icon--column" />
-                                  {column}
+                                  <span className="wb-tree-label" title={column}>
+                                    {column}
+                                  </span>
                                 </li>
                               ))}
                             </ul>
@@ -127,9 +129,11 @@ export function SchemaBrowser({
                             </summary>
                             <ul>
                               {(view.columns ?? []).map((column) => (
-                                <li key={`${view.name}_${column}`}>
+                                <li key={`${view.name}_${column}`} className="wb-tree-leaf">
                                   <span className="wb-tree-icon wb-tree-icon--column" />
-                                  {column}
+                                  <span className="wb-tree-label" title={column}>
+                                    {column}
+                                  </span>
                                 </li>
                               ))}
                             </ul>
@@ -157,9 +161,11 @@ export function SchemaBrowser({
                             {procedure.examples?.length ? (
                               <ul>
                                 {procedure.examples.map((example) => (
-                                  <li key={example}>
+                                  <li key={example} className="wb-tree-leaf">
                                     <span className="wb-tree-icon wb-tree-icon--sql" />
-                                    {example}
+                                    <span className="wb-tree-label" title={example}>
+                                      {example}
+                                    </span>
                                   </li>
                                 ))}
                               </ul>
@@ -179,9 +185,11 @@ export function SchemaBrowser({
                     </summary>
                     <ul>
                       {functions.map((fn) => (
-                        <li key={fn.name}>
+                        <li key={fn.name} className="wb-tree-leaf">
                           <span className="wb-tree-icon wb-tree-icon--function" />
-                          {fn.name}
+                          <span className="wb-tree-label" title={fn.name}>
+                            {fn.name}
+                          </span>
                         </li>
                       ))}
                     </ul>

@@ -600,6 +600,29 @@ body {
   user-select: none;
 }
 
+.wb-tree-leaf {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+  color: #2b2c32;
+  line-height: 1.2;
+  font-size: 13px;
+  padding-right: 4px;
+}
+
+.wb-tree-label {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .wb-schema-tree summary::-webkit-details-marker {
   display: none;
 }
