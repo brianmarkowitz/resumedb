@@ -407,7 +407,7 @@ export function Workbench() {
             <span className="dot dot-yellow" />
             <span className="dot dot-green" />
           </div>
-          <h1>MySQL Workbench</h1>
+          <h1>Brian Workbench</h1>
           <div />
         </header>
 
