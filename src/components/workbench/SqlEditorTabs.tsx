@@ -3,6 +3,7 @@
 import Editor from "@monaco-editor/react";
 import clsx from "clsx";
 import { useEffect } from "react";
+import { ToolbarIcon } from "@/components/workbench/ToolbarIcon";
 import type { SavedQuery } from "@/lib/resumedb/types";
 import type { QueryTab } from "@/components/workbench/workbenchTypes";
 
@@ -98,39 +99,49 @@ export function SqlEditorTabs({
         <div className="wb-query-toolbar-icons">
           <button
             type="button"
-            className="wb-tool wb-tool--folder"
+            className="wb-tool wb-tool--editor"
             aria-label="Open first saved query"
             title="Open first saved query"
             onClick={onLoadFirstSavedQuery}
-          />
+          >
+            <ToolbarIcon name="editor-folder" />
+          </button>
           <button
             type="button"
-            className="wb-tool wb-tool--save"
+            className="wb-tool wb-tool--editor"
             aria-label="Save current query"
             title="Save current query"
             onClick={onSaveCurrentQuery}
-          />
+          >
+            <ToolbarIcon name="editor-save" />
+          </button>
           <button
             type="button"
-            className="wb-tool wb-tool--bolt"
+            className="wb-tool wb-tool--editor"
             aria-label="Execute query"
             title="Execute query"
             onClick={onRun}
-          />
+          >
+            <ToolbarIcon name="editor-bolt" />
+          </button>
           <button
             type="button"
-            className="wb-tool wb-tool--clock"
+            className="wb-tool wb-tool--editor"
             aria-label="Insert timeline query"
             title="Insert timeline query"
             onClick={onInsertTimelineQuery}
-          />
+          >
+            <ToolbarIcon name="editor-bolt-alt" />
+          </button>
           <button
             type="button"
-            className="wb-tool wb-tool--brush"
+            className="wb-tool wb-tool--editor"
             aria-label="Clear current query"
             title="Clear current query"
             onClick={onClearCurrentQuery}
-          />
+          >
+            <ToolbarIcon name="editor-clean" />
+          </button>
         </div>
 
         <label className="wb-limit-control">

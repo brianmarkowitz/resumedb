@@ -13,6 +13,7 @@ import { SchemaBrowser } from "@/components/workbench/SchemaBrowser";
 import { ResultsPanel } from "@/components/workbench/ResultsPanel";
 import { SqlEditorTabs } from "@/components/workbench/SqlEditorTabs";
 import { StandardResume } from "@/components/workbench/StandardResume";
+import { ToolbarIcon } from "@/components/workbench/ToolbarIcon";
 import type { QueryTab } from "@/components/workbench/workbenchTypes";
 import { executeQuery, normalizeSql } from "@/lib/resumedb/executeQuery";
 import { getRecommendedQueries, getStarterQueries } from "@/lib/resumedb/queryCatalog";
@@ -147,26 +148,8 @@ export function Workbench() {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("workbench");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [denseMode, setDenseMode] = useState(false);
-  const [sidebarWidth, setSidebarWidth] = useState(() => {
-    if (typeof window === "undefined") {
-      return defaultSidebarWidth;
-    }
-
-    const storedValue = Number(window.localStorage.getItem(sidebarWidthStorageKey));
-    return Number.isFinite(storedValue) && storedValue > 0
-      ? Math.round(storedValue)
-      : defaultSidebarWidth;
-  });
-  const [outputHeight, setOutputHeight] = useState(() => {
-    if (typeof window === "undefined") {
-      return defaultOutputHeight;
-    }
-
-    const storedValue = Number(window.localStorage.getItem(outputHeightStorageKey));
-    return Number.isFinite(storedValue) && storedValue > 0
-      ? Math.round(storedValue)
-      : defaultOutputHeight;
-  });
+  const [sidebarWidth, setSidebarWidth] = useState(defaultSidebarWidth);
+  const [outputHeight, setOutputHeight] = useState(defaultOutputHeight);
   const [activeResize, setActiveResize] = useState<ActiveResize>(null);
   const [isCompactViewport, setIsCompactViewport] = useState(false);
   const [statusNote, setStatusNote] = useState("Ready");
@@ -231,12 +214,27 @@ export function Workbench() {
       return;
     }
 
+    const storedSidebarWidth = Number(window.localStorage.getItem(sidebarWidthStorageKey));
+    const storedOutputHeight = Number(window.localStorage.getItem(outputHeightStorageKey));
+    const applyStoredSizingFrame = window.requestAnimationFrame(() => {
+      if (Number.isFinite(storedSidebarWidth) && storedSidebarWidth > 0) {
+        setSidebarWidth(Math.round(storedSidebarWidth));
+      }
+
+      if (Number.isFinite(storedOutputHeight) && storedOutputHeight > 0) {
+        setOutputHeight(Math.round(storedOutputHeight));
+      }
+    });
+
     const mediaQuery = window.matchMedia("(max-width: 1100px)");
     const handleViewportChange = () => setIsCompactViewport(mediaQuery.matches);
     handleViewportChange();
     mediaQuery.addEventListener("change", handleViewportChange);
 
-    return () => mediaQuery.removeEventListener("change", handleViewportChange);
+    return () => {
+      window.cancelAnimationFrame(applyStoredSizingFrame);
+      mediaQuery.removeEventListener("change", handleViewportChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -725,20 +723,84 @@ export function Workbench() {
           <>
             <div className="wb-main-toolbar">
               <div className="wb-icon-row">
-                <button type="button" className="wb-tool wb-tool--folder" onClick={handleLoadFirstSaved} title="Open first saved query" aria-label="Open first saved query" />
-                <button type="button" className="wb-tool wb-tool--script" onClick={handleInsertNarrativeTemplate} title="Insert resume narrative template" aria-label="Insert resume narrative template" />
-                <button type="button" className="wb-tool wb-tool--save" onClick={handleSaveCurrentQuery} title="Save current query" aria-label="Save current query" />
-                <button type="button" className="wb-tool wb-tool--db" onClick={() => openPresetInNewTab("onePage", "Opened one-page resume view")} title="Run one-page resume view" aria-label="Run one-page resume view" />
-                <button type="button" className="wb-tool wb-tool--lock" onClick={() => openPresetInNewTab("governance", "Opened governance highlights view")} title="Run governance highlights" aria-label="Run governance highlights" />
-                <button type="button" className="wb-tool wb-tool--search" onClick={() => {
-                  setNavigatorTab("schemas");
-                  setSchemaSearch("skill");
-                  setStatusNote("Filtered schema objects to skills");
-                }} title="Filter schema to skills" aria-label="Filter schema to skills" />
+                <button
+                  type="button"
+                  className="wb-tool wb-tool--top"
+                  onClick={handleLoadFirstSaved}
+                  title="Open first saved query"
+                  aria-label="Open first saved query"
+                >
+                  <ToolbarIcon name="sql-plus" />
+                </button>
+                <button
+                  type="button"
+                  className="wb-tool wb-tool--top"
+                  onClick={handleInsertNarrativeTemplate}
+                  title="Insert resume narrative template"
+                  aria-label="Insert resume narrative template"
+                >
+                  <ToolbarIcon name="sql-doc" />
+                </button>
+                <button
+                  type="button"
+                  className="wb-tool wb-tool--top"
+                  onClick={handleSaveCurrentQuery}
+                  title="Save current query"
+                  aria-label="Save current query"
+                >
+                  <ToolbarIcon name="info" />
+                </button>
+                <button
+                  type="button"
+                  className="wb-tool wb-tool--top"
+                  onClick={() => openPresetInNewTab("onePage", "Opened one-page resume view")}
+                  title="Run one-page resume view"
+                  aria-label="Run one-page resume view"
+                >
+                  <ToolbarIcon name="db-plus" />
+                </button>
+                <button
+                  type="button"
+                  className="wb-tool wb-tool--top"
+                  onClick={() => openPresetInNewTab("governance", "Opened governance highlights view")}
+                  title="Run governance highlights"
+                  aria-label="Run governance highlights"
+                >
+                  <ToolbarIcon name="table-plus" />
+                </button>
+                <button
+                  type="button"
+                  className="wb-tool wb-tool--top"
+                  onClick={() => {
+                    setNavigatorTab("schemas");
+                    setSchemaSearch("skill");
+                    setStatusNote("Filtered schema objects to skills");
+                  }}
+                  title="Filter schema to skills"
+                  aria-label="Filter schema to skills"
+                >
+                  <ToolbarIcon name="routine-plus" />
+                </button>
               </div>
               <div className="wb-icon-row">
-                <button type="button" className="wb-tool wb-tool--chart" onClick={() => openPresetInNewTab("impact", "Opened impact metrics dashboard query")} title="Run impact highlights" aria-label="Run impact highlights" />
-                <button type="button" className="wb-tool wb-tool--gauge" onClick={() => openPresetInNewTab("skills", "Opened skills matrix query")} title="Run skills matrix" aria-label="Run skills matrix" />
+                <button
+                  type="button"
+                  className="wb-tool wb-tool--top"
+                  onClick={() => openPresetInNewTab("impact", "Opened impact metrics dashboard query")}
+                  title="Run impact highlights"
+                  aria-label="Run impact highlights"
+                >
+                  <ToolbarIcon name="table-search" />
+                </button>
+                <button
+                  type="button"
+                  className="wb-tool wb-tool--top"
+                  onClick={() => openPresetInNewTab("skills", "Opened skills matrix query")}
+                  title="Run skills matrix"
+                  aria-label="Run skills matrix"
+                >
+                  <ToolbarIcon name="db-sync" />
+                </button>
               </div>
             </div>
 

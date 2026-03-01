@@ -280,208 +280,53 @@ body {
 }
 
 .wb-tool {
-  width: 21px;
-  height: 21px;
-  border-color: #a3a2ab;
-  border-radius: 2px;
-  background: linear-gradient(#fbfbfd, #e7e7ec);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  padding: 0;
+  background: transparent;
   cursor: pointer;
 }
 
 .wb-tool:hover,
 .wb-chrome-btn:hover .wb-glyph,
 .wb-query-actions button:hover {
-  filter: brightness(0.96);
+  filter: brightness(0.95);
 }
 
-.wb-tool--folder {
-  background: linear-gradient(#f4d396 47%, #e2b86a 47%);
+.wb-tool--top {
+  width: 32px;
+  height: 24px;
 }
 
-.wb-tool--folder::before {
-  content: "";
-  position: absolute;
-  left: 3px;
-  top: 2px;
-  width: 8px;
-  height: 4px;
-  border-radius: 1px 1px 0 0;
-  background: #d9a956;
+.wb-tool--editor {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #a5a6ae;
+  border-radius: 3px;
+  background: linear-gradient(#fbfbfd, #ececf1);
 }
 
-.wb-tool--script::before {
-  content: "";
-  position: absolute;
-  left: 4px;
-  right: 4px;
-  top: 4px;
-  height: 1px;
-  background: #6d6e78;
-  box-shadow: 0 3px 0 #6d6e78, 0 6px 0 #6d6e78;
+.wb-tool-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
 }
 
-.wb-tool--save {
-  background: linear-gradient(#8e919b 46%, #575b65 46%);
+.wb-tool--top .wb-tool-icon {
+  width: 21px;
+  height: 21px;
 }
 
-.wb-tool--save::before {
-  content: "";
-  position: absolute;
-  left: 5px;
-  top: 5px;
-  width: 10px;
-  height: 5px;
-  background: #e7e8ec;
+.wb-tool--editor .wb-tool-icon {
+  width: 17px;
+  height: 17px;
 }
 
-.wb-tool--db {
-  border-radius: 9px / 4px;
-}
-
-.wb-tool--db::before,
-.wb-tool--db::after {
-  content: "";
-  position: absolute;
-  left: 3px;
-  right: 3px;
-  border: 1px solid #71727b;
-  border-radius: 6px / 3px;
-}
-
-.wb-tool--db::before {
-  top: 3px;
-}
-
-.wb-tool--db::after {
-  bottom: 3px;
-}
-
-.wb-tool--lock::before {
-  content: "";
-  position: absolute;
-  left: 6px;
-  bottom: 4px;
-  width: 8px;
-  height: 6px;
-  border: 1px solid #6a6b74;
-  background: #ececf0;
-}
-
-.wb-tool--lock::after {
-  content: "";
-  position: absolute;
-  left: 6px;
-  top: 3px;
-  width: 6px;
-  height: 5px;
-  border: 1px solid #6a6b74;
-  border-bottom: 0;
-  border-radius: 4px 4px 0 0;
-}
-
-.wb-tool--search {
-  border-radius: 50%;
-}
-
-.wb-tool--search::before {
-  content: "";
-  position: absolute;
-  left: 4px;
-  top: 4px;
-  width: 8px;
-  height: 8px;
-  border: 1px solid #64656f;
-  border-radius: 50%;
-}
-
-.wb-tool--search::after {
-  content: "";
-  position: absolute;
-  right: -2px;
-  bottom: 2px;
-  width: 5px;
-  height: 1px;
-  background: #64656f;
-  transform: rotate(40deg);
-}
-
-.wb-tool--chart::before {
-  content: "";
-  position: absolute;
-  left: 3px;
-  right: 3px;
-  bottom: 3px;
-  height: 8px;
-  background: linear-gradient(
-    120deg,
-    transparent 15%,
-    #4f82c2 15%,
-    #4f82c2 34%,
-    transparent 34%,
-    transparent 58%,
-    #d35d5d 58%,
-    #d35d5d 74%,
-    transparent 74%
-  );
-}
-
-.wb-tool--gauge {
-  border-radius: 50%;
-}
-
-.wb-tool--gauge::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 1px;
-  height: 6px;
-  background: #666771;
-  transform: translate(-50%, -80%) rotate(45deg);
-}
-
-.wb-tool--bolt::before {
-  content: "⚡";
-  position: absolute;
-  left: 4px;
-  top: 0;
-  font-size: 11px;
-  color: #b88918;
-}
-
-.wb-tool--clock {
-  border-radius: 50%;
-}
-
-.wb-tool--clock::before {
-  content: "";
-  position: absolute;
-  left: 9px;
-  top: 4px;
-  width: 1px;
-  height: 6px;
-  background: #666771;
-}
-
-.wb-tool--clock::after {
-  content: "";
-  position: absolute;
-  left: 9px;
-  top: 9px;
-  width: 4px;
-  height: 1px;
-  background: #666771;
-}
-
-.wb-tool--brush::before {
-  content: "";
-  position: absolute;
-  left: 4px;
-  top: 3px;
-  width: 10px;
-  height: 2px;
-  background: #7a6445;
-  transform: rotate(-35deg);
+.wb-query-toolbar .wb-tool--editor:hover {
+  background: linear-gradient(#fefefe, #f1f1f5);
+  border-color: #999ba4;
 }
 
 .wb-work-area {
