@@ -1,0 +1,37 @@
+{
+  "resume_one_page": [
+    "Clustered Index Scan on person (estimated rows: 1)",
+    "Nested Loop join person -> roles -> projects",
+    "Compute Scalar for sectioned resume output"
+  ],
+  "skills_matrix": [
+    "Index Seek on skills(level, years)",
+    "Sort by level DESC, years DESC",
+    "Project skill matrix columns"
+  ],
+  "impact_highlights": [
+    "Index Seek on achievements(metric_value)",
+    "Filter metric_value IS NOT NULL",
+    "Sort by metric_value DESC"
+  ],
+  "experience_timeline": [
+    "Clustered Index Scan on roles(start_date)",
+    "Sort start_date DESC",
+    "Project timeline view"
+  ],
+  "best_work_reliability": [
+    "Execute Procedure sp_best_work",
+    "Filter achievements by theme = reliability",
+    "Rank by metric strength + recency"
+  ],
+  "best_work_governance": [
+    "Execute Procedure sp_best_work",
+    "Filter achievements by theme = governance",
+    "Rank by governance signal"
+  ],
+  "sp_best_work": [
+    "Execute Procedure sp_best_work",
+    "Apply theme parser and weighted ranking",
+    "Project top achievements with rationale"
+  ]
+}

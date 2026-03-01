@@ -1,0 +1,325 @@
+{
+  "person": [
+    {
+      "id": "person_1",
+      "full_name": "Brian M. Markowitz",
+      "headline": "Principal Data Architect & Functional Manager",
+      "location": "Rockville, MD",
+      "linkedin": "LinkedIn profile available on request",
+      "email_redacted": "b***@gmail.com",
+      "summary": "Strategic and results-driven data architect and technology leader with 25+ years in healthcare, scientific research, and public sector domains."
+    }
+  ],
+  "skills": [
+    {
+      "skill": "Data Architecture",
+      "category": "Data & Analytics",
+      "level": 5,
+      "years": 20,
+      "last_used": "2026",
+      "evidence": "Architected AWS data platforms across NIH/NCI programs"
+    },
+    {
+      "skill": "Data Modeling",
+      "category": "Data & Analytics",
+      "level": 5,
+      "years": 20,
+      "last_used": "2026",
+      "evidence": "Designed enterprise models for scientific and healthcare workloads"
+    },
+    {
+      "skill": "ETL / ELT",
+      "category": "Data & Analytics",
+      "level": 5,
+      "years": 25,
+      "last_used": "2026",
+      "evidence": "Directed ETL programs at Digital Infuzion and IBM"
+    },
+    {
+      "skill": "AWS Serverless",
+      "category": "Cloud & Infrastructure",
+      "level": 5,
+      "years": 10,
+      "last_used": "2026",
+      "evidence": "Lambda, DynamoDB, Athena, Glue, OpenSearch in production"
+    },
+    {
+      "skill": "CloudFormation / IaC",
+      "category": "Cloud & Infrastructure",
+      "level": 4,
+      "years": 8,
+      "last_used": "2026",
+      "evidence": "Built repeatable serverless audit and platform stacks"
+    },
+    {
+      "skill": "Python",
+      "category": "Programming & Databases",
+      "level": 4,
+      "years": 12,
+      "last_used": "2026",
+      "evidence": "Automation and pipeline tooling"
+    },
+    {
+      "skill": "PostgreSQL / MySQL / Oracle / DB2",
+      "category": "Programming & Databases",
+      "level": 5,
+      "years": 20,
+      "last_used": "2026",
+      "evidence": "Legacy modernization and enterprise data operations"
+    },
+    {
+      "skill": "GenAI + RAG",
+      "category": "AI",
+      "level": 4,
+      "years": 3,
+      "last_used": "2026",
+      "evidence": "Built LLM chatbot and agentic demos with vector stores"
+    },
+    {
+      "skill": "Leadership & Mentoring",
+      "category": "Leadership",
+      "level": 5,
+      "years": 15,
+      "last_used": "2026",
+      "evidence": "Functional manager, Chief of Staff, team coaching and hiring"
+    }
+  ],
+  "roles": [
+    {
+      "id": "role_di_principal",
+      "company": "Digital Infuzion, Inc.",
+      "title": "Principal Data Architect & Functional Manager",
+      "start_date": "2016-06-01",
+      "end_date": "Present",
+      "location": "Rockville, MD",
+      "summary": "Led cloud-native architecture, data modernization, and team leadership across scientific and healthcare programs.",
+      "tech_stack": ["AWS Lambda", "DynamoDB", "Athena", "Glue", "OpenSearch", "QuickSight", "Python"]
+    },
+    {
+      "id": "role_ibm_principal",
+      "company": "IBM Global Services",
+      "title": "Principal Data Architect & Functional Manager",
+      "start_date": "1998-01-01",
+      "end_date": "2016-05-31",
+      "location": "Gaithersburg, MD",
+      "summary": "Directed ETL development and architecture across finance, healthcare, and public sector clients.",
+      "tech_stack": ["Oracle", "DB2", "MySQL", "Informatica", "ETL frameworks"]
+    },
+    {
+      "id": "role_chief_of_staff",
+      "company": "Digital Infuzion, Inc.",
+      "title": "Chief of Staff",
+      "start_date": "2021-01-01",
+      "end_date": "Present",
+      "location": "Rockville, MD",
+      "summary": "Owned budgeting, resource allocation, conflict resolution, and career development frameworks.",
+      "tech_stack": ["People Operations", "Budget Planning", "Mentorship Programs"]
+    },
+    {
+      "id": "role_ibm_federal",
+      "company": "IBM Federal Portfolio",
+      "title": "Lead ETL Developer",
+      "start_date": "2004-01-01",
+      "end_date": "2016-05-31",
+      "location": "Multiple US locations",
+      "summary": "Led ETL delivery for Emory Healthcare, USPS, Gwinnett County Schools, and Texas DPS.",
+      "tech_stack": ["ETL", "Data Warehousing", "Operational Data Stores"]
+    },
+    {
+      "id": "role_ibm_enterprise",
+      "company": "IBM Global Services Portfolio",
+      "title": "ETL Developer / DBA",
+      "start_date": "1998-01-01",
+      "end_date": "2010-12-31",
+      "location": "Multiple US locations",
+      "summary": "Delivered continuity-focused data engineering for enterprise and public-sector clients.",
+      "tech_stack": ["DBA", "ETL", "Business Continuity", "Recovery Services"]
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj_idpcc",
+      "project_name": "Influenza Data Processing and Coordination Center (iDPCC)",
+      "client": "NIAID/NIH CEIRR",
+      "domain": "Scientific Research",
+      "start_year": 2018,
+      "end_year": 2026,
+      "summary": "Migrated monolithic systems to AWS serverless architecture and modernized data access for clinical trial biospecimens.",
+      "theme_tags": ["scale", "reliability", "cost", "governance"],
+      "tech_stack": ["AWS Lambda", "DynamoDB", "Athena", "OpenSearch", "CloudFormation"]
+    },
+    {
+      "id": "proj_sdmcc",
+      "project_name": "Statistical Data Management and Coordination Center (SDMCC)",
+      "client": "NIAID CIVICs",
+      "domain": "Healthcare",
+      "start_year": 2020,
+      "end_year": 2026,
+      "summary": "Built AWS-based data infrastructure and serverless auditing to improve research collaboration and export efficiency.",
+      "theme_tags": ["reliability", "governance", "scale"],
+      "tech_stack": ["AWS Lambda", "Athena", "CloudFormation", "Serverless Pipelines"]
+    },
+    {
+      "id": "proj_nci",
+      "project_name": "NCI DCTD Unified Data Platform",
+      "client": "National Cancer Institute",
+      "domain": "Healthcare",
+      "start_year": 2017,
+      "end_year": 2024,
+      "summary": "Integrated 30+ NCI data sources into a scalable analytics platform with strong auditability.",
+      "theme_tags": ["scale", "governance", "reliability"],
+      "tech_stack": ["AWS", "Data Modeling", "Serverless Auditing"]
+    },
+    {
+      "id": "proj_ccos",
+      "project_name": "Collaborative Computational Oncology Services (CCOS)",
+      "client": "NIH/NCATS",
+      "domain": "Scientific Research",
+      "start_year": 2016,
+      "end_year": 2022,
+      "summary": "Led transition to serverless architecture and improved computational data workflows.",
+      "theme_tags": ["reliability", "scale"],
+      "tech_stack": ["Serverless", "Database Performance Optimization"]
+    },
+    {
+      "id": "proj_ai_chat",
+      "project_name": "AI Chatbot for Biospecimen Repository",
+      "client": "NIAID",
+      "domain": "AI + Data Products",
+      "start_year": 2023,
+      "end_year": 2026,
+      "summary": "Developed LLM + agentic workflows to simplify complex scientific data search and exploration.",
+      "theme_tags": ["ai", "reliability", "governance"],
+      "tech_stack": ["OpenAI GPT", "AWS Bedrock", "LangChain", "Vector Stores"]
+    }
+  ],
+  "achievements": [
+    {
+      "id": "ach_migrate_serverless",
+      "impact_title": "Monolith-to-serverless modernization",
+      "metric_name": "legacy systems migrated",
+      "metric_value": 1,
+      "metric_display": "Full platform modernization",
+      "context": "Replaced legacy monolith and traditional RDBMS patterns with serverless NoSQL and query systems.",
+      "tech_stack": ["AWS Lambda", "DynamoDB", "Athena"],
+      "year": 2024,
+      "theme_tags": ["scale", "reliability", "cost"],
+      "project_id": "proj_idpcc"
+    },
+    {
+      "id": "ach_biospecimens",
+      "impact_title": "Clinical-trial biospecimen accessibility",
+      "metric_name": "biospecimens indexed",
+      "metric_value": 4000000,
+      "metric_display": "4M+ biospecimens",
+      "context": "Architected data model and ETL workflows enabling efficient discovery across concluded trials.",
+      "tech_stack": ["ETL", "Data Modeling", "OpenSearch"],
+      "year": 2025,
+      "theme_tags": ["scale", "governance", "reliability"],
+      "project_id": "proj_idpcc"
+    },
+    {
+      "id": "ach_nci_sources",
+      "impact_title": "NCI source integration",
+      "metric_name": "data sources integrated",
+      "metric_value": 30,
+      "metric_display": "30+ sources",
+      "context": "Built scalable data platform simplifying analytics and access for DCTD teams.",
+      "tech_stack": ["AWS", "Data Modeling", "Serverless Auditing"],
+      "year": 2023,
+      "theme_tags": ["scale", "governance"],
+      "project_id": "proj_nci"
+    },
+    {
+      "id": "ach_decommission",
+      "impact_title": "Legacy infrastructure decommissioning",
+      "metric_name": "legacy resources decommissioned",
+      "metric_value": 1,
+      "metric_display": "Complete legacy shutdown",
+      "context": "Fully decommissioned legacy AWS assets after migration, reducing platform overhead.",
+      "tech_stack": ["AWS", "CloudFormation"],
+      "year": 2024,
+      "theme_tags": ["cost", "reliability"],
+      "project_id": "proj_idpcc"
+    },
+    {
+      "id": "ach_chatbot",
+      "impact_title": "AI-driven researcher support",
+      "metric_name": "chatbot deployment",
+      "metric_value": 1,
+      "metric_display": "LLM + agentic chatbot live",
+      "context": "Shipped AI chatbot to simplify repository search and improve user interaction quality.",
+      "tech_stack": ["OpenAI GPT", "AWS Bedrock", "LangChain"],
+      "year": 2025,
+      "theme_tags": ["ai", "reliability", "governance"],
+      "project_id": "proj_ai_chat"
+    },
+    {
+      "id": "ach_team_growth",
+      "impact_title": "GenAI capability scaling",
+      "metric_name": "engineers onboarded",
+      "metric_value": 1,
+      "metric_display": "GenAI engineer hired + mentored",
+      "context": "Designed structured onboarding and mentorship for new GenAI engineering talent.",
+      "tech_stack": ["Mentorship", "LLM Enablement"],
+      "year": 2025,
+      "theme_tags": ["ai", "governance"],
+      "project_id": "proj_ai_chat"
+    },
+    {
+      "id": "ach_public_repos",
+      "impact_title": "Scientific repository publishing pipelines",
+      "metric_name": "public repositories supported",
+      "metric_value": 3,
+      "metric_display": "ImmPort, GenBank, BV-BRC",
+      "context": "Standardized ETL submission pipelines to major scientific repositories.",
+      "tech_stack": ["ETL", "Data Standardization"],
+      "year": 2024,
+      "theme_tags": ["governance", "reliability"],
+      "project_id": "proj_idpcc"
+    }
+  ],
+  "certifications": [],
+  "education": [
+    {
+      "institution": "University of Maryland, College Park",
+      "program": "Decision and Information Systems",
+      "minor": "Statistics",
+      "year": 1998,
+      "notes": "125 credit hours"
+    }
+  ],
+  "tools": [
+    { "name": "AWS Lambda", "category": "Cloud", "used_in": "iDPCC, SDMCC, NCI", "last_used": "2026" },
+    { "name": "DynamoDB", "category": "Database", "used_in": "iDPCC", "last_used": "2026" },
+    { "name": "Athena", "category": "Analytics", "used_in": "iDPCC, SDMCC", "last_used": "2026" },
+    { "name": "Glue", "category": "Data Integration", "used_in": "iDPCC", "last_used": "2026" },
+    { "name": "OpenSearch", "category": "Search", "used_in": "iDPCC", "last_used": "2026" },
+    { "name": "QuickSight", "category": "BI", "used_in": "NCI analytics", "last_used": "2025" },
+    { "name": "LangChain", "category": "AI Framework", "used_in": "AI chatbot", "last_used": "2026" },
+    { "name": "OpenAI GPT", "category": "LLM", "used_in": "AI chatbot", "last_used": "2026" },
+    { "name": "AWS Bedrock", "category": "LLM Platform", "used_in": "AI demos", "last_used": "2026" }
+  ],
+  "domains": [
+    {
+      "domain": "Healthcare",
+      "years": 20,
+      "highlights": "NCI, Emory, Blue Cross Blue Shield"
+    },
+    {
+      "domain": "Scientific Research",
+      "years": 10,
+      "highlights": "NIAID, NCATS, CEIRR, CIVICs"
+    },
+    {
+      "domain": "Public Sector",
+      "years": 15,
+      "highlights": "USPS, Texas DPS, Department of Corrections"
+    },
+    {
+      "domain": "Finance",
+      "years": 4,
+      "highlights": "Morgan Stanley Dean Witter"
+    }
+  ]
+}
