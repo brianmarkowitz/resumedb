@@ -438,7 +438,7 @@ export function Workbench() {
           <button type="button" className="wb-home-btn" aria-label="Home" onClick={handleHome}>
             <span className="wb-glyph wb-glyph--home" />
           </button>
-          <div className="wb-connection-tab">resume_db(local-brian) - Brian bio sample loaded</div>
+          <div className="wb-connection-tab">resume(local-bmarko) - Brian bio sample loaded</div>
           <div className="wb-window-icons">
             <button
               type="button"
