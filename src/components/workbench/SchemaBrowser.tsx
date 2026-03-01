@@ -89,9 +89,9 @@ export function SchemaBrowser({
                       Tables
                     </summary>
                     <ul>
-                      {tables.map((table, index) => (
+                      {tables.map((table) => (
                         <li key={table.name}>
-                          <details open={index === 0}>
+                          <details>
                             <summary>
                               <span className="wb-tree-icon wb-tree-icon--table" />
                               {table.name}

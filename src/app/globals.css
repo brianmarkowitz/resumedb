@@ -145,19 +145,20 @@ body {
 
 .wb-view-toggle {
   border: 1px solid #a8a7b0;
-  border-radius: 3px;
-  background: #efeff3;
+  border-radius: 2px;
+  background: #f1f1f4;
   color: #34353c;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 600;
   line-height: 1;
-  height: 24px;
-  padding: 0 10px;
+  height: 17px;
+  min-width: 22px;
+  padding: 0 4px;
   cursor: pointer;
 }
 
 .wb-view-toggle--active {
-  background: #d6d5dc;
+  background: #d8d7de;
 }
 
 .wb-chrome-btn {
@@ -1124,8 +1125,9 @@ details[open] > summary > .wb-tree-icon--caret {
   }
 
   .wb-view-toggle {
-    font-size: 11px;
-    padding: 0 7px;
+    font-size: 10px;
+    min-width: 20px;
+    padding: 0 3px;
   }
 
   .wb-resume-shell {

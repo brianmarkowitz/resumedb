@@ -105,7 +105,7 @@ export function Workbench() {
   const starterQueries = useMemo(() => getStarterQueries(), []);
   const recommendedQueries = useMemo(() => getRecommendedQueries(), []);
 
-  const initialSql = `-- Brian resume profile query\n${starterQueries[0]?.sqlTemplates[0] ?? presetSql.onePage}`;
+  const initialSql = starterQueries[0]?.sqlTemplates[0] ?? presetSql.onePage;
   const defaultSavedQueries = useMemo<SavedQuery[]>(
     () =>
       starterQueries.map((query) => ({
@@ -236,7 +236,7 @@ export function Workbench() {
       {
         id: newTabId,
         title: makeQueryTitleForSql(presetSql.onePage, previous.map((tab) => tab.title)),
-        sql: `-- Brian resume profile query\n${presetSql.onePage}`,
+        sql: presetSql.onePage,
         status: "idle",
         result: null,
       },
@@ -444,7 +444,7 @@ export function Workbench() {
       {
         id: baseTabId,
         title: makeQueryTitleForSql(presetSql.onePage, []),
-        sql: `-- Brian resume profile query\n${presetSql.onePage}`,
+        sql: presetSql.onePage,
         status: "idle",
         result: null,
       },
@@ -510,11 +510,9 @@ export function Workbench() {
                     : "Returned to SQL workbench view",
                 );
               }}
-              title={
-                displayMode === "workbench" ? "Standard Resume" : "SQL Workbench"
-              }
+              title={displayMode === "workbench" ? "Standard Resume" : "SQL Workbench"}
             >
-              {displayMode === "workbench" ? "Standard Resume" : "SQL Workbench"}
+              {displayMode === "workbench" ? "R" : "SQL"}
             </button>
             <button
               type="button"
