@@ -699,7 +699,12 @@ export function Workbench() {
 
         <div className="wb-connection-strip" role="presentation">
           <button type="button" className="wb-home-btn" aria-label="Home" onClick={handleHome}>
-            <span className="wb-glyph wb-glyph--home" />
+            <svg viewBox="0 0 24 24" className="wb-home-icon" aria-hidden="true">
+              <path d="M3.8 11.1 12 4l8.2 7.1-1.7 1.9-1.3-1.1v7.5H6.8v-7.5l-1.3 1.1z" fill="#2a2d35" />
+              <path d="M5.8 10.5 12 5.1l6.2 5.4" fill="none" stroke="#4b4f5a" strokeWidth="1.1" />
+              <rect x="10.8" y="13.2" width="2.4" height="6.1" rx="0.5" fill="#848895" />
+              <path d="M6.8 19.4h10.4" stroke="#202229" strokeWidth="0.9" />
+            </svg>
           </button>
           <div className="wb-connection-tab">resume(local-bmarko) - Warning - not supported</div>
           <div className="wb-window-icons">
