@@ -85,13 +85,19 @@ function inferSavedQueryDescription(sql: string): string {
   return "Shows curated resume data from ResumeDB.";
 }
 
-function buildSavedQueryEditorSql(savedQuery: SavedQuery): string {
-  const description = (savedQuery.description ?? "").trim();
-  if (!description) {
-    return savedQuery.sql;
+function buildSqlWithDescription(sql: string, description?: string): string {
+  const cleanedSql = sql.trim();
+  const cleanedDescription = (description ?? "").trim();
+
+  if (!cleanedDescription) {
+    return cleanedSql;
   }
 
-  return [`-- ${description}`, savedQuery.sql.trim()].join("\n");
+  return [`-- ${cleanedDescription}`, cleanedSql].join("\n");
+}
+
+function buildSavedQueryEditorSql(savedQuery: SavedQuery): string {
+  return buildSqlWithDescription(savedQuery.sql, savedQuery.description);
 }
 
 const savedQueryStorageKey = "resumedb_custom_saved_queries_v1";
@@ -127,7 +133,16 @@ export function Workbench() {
   const starterQueries = useMemo(() => getStarterQueries(), []);
   const recommendedQueries = useMemo(() => getRecommendedQueries(), []);
 
-  const initialSql = starterQueries[0]?.sqlTemplates[0] ?? presetSql.onePage;
+  const initialStarterQuery = starterQueries[0];
+  const initialSqlBase = initialStarterQuery?.sqlTemplates[0] ?? presetSql.onePage;
+  const initialSqlDescription =
+    initialStarterQuery?.simpleHint ??
+    "Shows a concise one-page overview of Brian's background and strengths.";
+  const initialSql = buildSqlWithDescription(initialSqlBase, initialSqlDescription);
+  const initialResult = useMemo(
+    () => executeQuery(initialSqlBase, defaultMode),
+    [initialSqlBase],
+  );
   const defaultSavedQueries = useMemo<SavedQuery[]>(
     () =>
       starterQueries.map((query) => ({
@@ -156,13 +171,13 @@ export function Workbench() {
   const [statusNote, setStatusNote] = useState("Ready");
   const workAreaRef = useRef<HTMLDivElement | null>(null);
   const editorColumnRef = useRef<HTMLElement | null>(null);
-  const [tabs, setTabs] = useState<QueryTab[]>([
+  const [tabs, setTabs] = useState<QueryTab[]>(() => [
     {
       id: makeTabId(),
       title: makeQueryTitleForSql(initialSql, []),
       sql: initialSql,
-      status: "idle",
-      result: null,
+      status: initialResult.status,
+      result: initialResult,
     },
   ]);
   const [activeTabId, setActiveTabId] = useState<string>(() => tabs[0]?.id ?? "");
@@ -579,6 +594,8 @@ export function Workbench() {
   }, [activeTabId]);
 
   const handleHome = useCallback(() => {
+    const homeSql = buildSqlWithDescription(initialSqlBase, initialSqlDescription);
+    const homeResult = executeQuery(initialSqlBase, defaultMode);
     const baseTabId = makeTabId();
     setDisplayMode("workbench");
     setNavigatorTab("schemas");
@@ -589,15 +606,15 @@ export function Workbench() {
     setTabs([
       {
         id: baseTabId,
-        title: makeQueryTitleForSql(presetSql.onePage, []),
-        sql: presetSql.onePage,
-        status: "idle",
-        result: null,
+        title: makeQueryTitleForSql(homeSql, []),
+        sql: homeSql,
+        status: homeResult.status,
+        result: homeResult,
       },
     ]);
     setActiveTabId(baseTabId);
-    setStatusNote("Returned to home resume workspace");
-  }, []);
+    setStatusNote("Returned to home resume workspace with profile snapshot preloaded");
+  }, [initialSqlBase, initialSqlDescription]);
 
   const handleRunAdminAction = useCallback(
     (preset: PresetKey) => {
