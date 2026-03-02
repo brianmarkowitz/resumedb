@@ -66,7 +66,7 @@ body {
   overflow: hidden;
   background: var(--wb-chrome-2);
   display: grid;
-  grid-template-rows: 34px 44px 52px minmax(0, 1fr) 23px;
+  grid-template-rows: 34px 30px 30px minmax(0, 1fr) 23px;
 }
 
 .wb-titlebar {
@@ -113,7 +113,7 @@ body {
 
 .wb-connection-strip {
   display: grid;
-  grid-template-columns: 92px minmax(0, 1fr) 154px;
+  grid-template-columns: 62px minmax(0, 1fr) 134px;
   align-items: stretch;
   background: var(--wb-chrome-1);
   border-bottom: 1px solid var(--wb-border);
@@ -132,8 +132,8 @@ body {
 }
 
 .wb-home-icon {
-  width: 28px;
-  height: 28px;
+  width: 14px;
+  height: 14px;
   display: block;
   filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.28));
 }
@@ -141,9 +141,9 @@ body {
 .wb-connection-tab {
   display: flex;
   align-items: center;
-  padding: 0 14px;
+  padding: 0 10px;
   border-right: 1px solid var(--wb-border);
-  font-size: 15px;
+  font-size: 10px;
   font-weight: 500;
   color: #2f3036;
   white-space: nowrap;
@@ -155,22 +155,22 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 6px;
-  padding: 0 9px;
+  gap: 4px;
+  padding: 0 6px;
 }
 
 .wb-chrome-btn {
   border: 0;
   background: transparent;
-  width: 19px;
-  height: 19px;
+  width: 14px;
+  height: 14px;
   padding: 0;
   cursor: pointer;
 }
 
 .wb-chrome-btn--mode {
   width: auto;
-  height: 20px;
+  height: 14px;
 }
 
 .wb-chrome-btn--active .wb-glyph--mode {
@@ -181,20 +181,20 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 10px;
+  gap: 6px;
   background: #ceced5;
   border-bottom: 1px solid var(--wb-border);
-  padding: 0 10px;
+  padding: 0 6px;
 }
 
 .wb-icon-row {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 4px;
 }
 
 .wb-icon-row + .wb-icon-row {
-  margin-left: 10px;
+  margin-left: 6px;
 }
 
 .wb-glyph,
@@ -245,23 +245,23 @@ body {
 
 .wb-glyph--mode {
   width: auto;
-  min-width: 21px;
-  height: 16px;
+  min-width: 14px;
+  height: 11px;
   border-radius: 2px;
   border-color: #9796a0;
   background: #f0f0f4;
-  font-size: 9px;
+  font-size: 7px;
   font-weight: 700;
   color: #44454f;
-  line-height: 14px;
+  line-height: 9px;
   text-align: center;
-  padding: 0 4px;
+  padding: 0 3px;
 }
 
 .wb-glyph--layout-primary,
 .wb-glyph--layout-secondary {
-  width: 16px;
-  height: 13px;
+  width: 12px;
+  height: 9px;
   border-radius: 1px;
   border-color: #80818a;
   background: #efeff2;
@@ -270,10 +270,10 @@ body {
 .wb-glyph--layout-primary::before {
   content: "";
   position: absolute;
-  left: 7px;
+  left: 5px;
   top: 1px;
   bottom: 1px;
-  width: 2px;
+  width: 1px;
   background: #4f78c6;
 }
 
@@ -282,14 +282,14 @@ body {
   position: absolute;
   left: 1px;
   right: 1px;
-  top: 5px;
-  height: 2px;
+  top: 4px;
+  height: 1px;
   background: #4f78c6;
 }
 
 .wb-glyph--layout-solid {
-  width: 12px;
-  height: 12px;
+  width: 9px;
+  height: 9px;
   border-color: #555761;
   background: #5e5f69;
 }
@@ -363,8 +363,8 @@ body {
 }
 
 .wb-tool--top {
-  width: 48px;
-  height: 40px;
+  width: 26px;
+  height: 22px;
 }
 
 .wb-tool--editor {
@@ -382,8 +382,8 @@ body {
 }
 
 .wb-tool--top .wb-tool-icon {
-  width: 34px;
-  height: 34px;
+  width: 18px;
+  height: 18px;
   filter: contrast(1.28) saturate(0.8);
 }
 
@@ -1336,11 +1336,11 @@ details[open] > summary > .wb-tree-icon--caret {
 }
 
 .wb-window--dense .wb-connection-strip {
-  min-height: 36px;
+  min-height: 26px;
 }
 
 .wb-window--dense .wb-main-toolbar {
-  min-height: 32px;
+  min-height: 24px;
 }
 
 @media (max-width: 1100px) {
@@ -1354,7 +1354,7 @@ details[open] > summary > .wb-tree-icon--caret {
     border: 0;
     min-height: 100dvh;
     height: auto;
-    grid-template-rows: 34px 40px 36px auto 24px;
+    grid-template-rows: 34px 30px 30px auto 24px;
   }
 
   .wb-work-area {
