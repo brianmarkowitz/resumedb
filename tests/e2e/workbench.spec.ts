@@ -1,20 +1,22 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("ResumeDB workbench", () => {
-  test("loads and executes starter query", async ({ page }) => {
+  test("loads resume-first by default and can execute starter query", async ({ page }) => {
     await page.goto("/");
 
-    await expect(page.getByRole("heading", { name: /mysql workbench/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /brian's resume/i })).toBeVisible();
+    await expect(page.getByLabel("Standard resume view")).toBeVisible();
 
+    await page.getByRole("button", { name: "SQL" }).click();
     await page.getByTitle("Run (Cmd/Ctrl + Enter)").click();
     await expect(page.locator(".wb-query-status")).toContainText(/row\(s\) returned/i);
   });
 
-  test("runs recommended query sequence", async ({ page }) => {
+  test("resume shortcuts open and execute SQL queries", async ({ page }) => {
     await page.goto("/");
 
-    await page.getByRole("button", { name: /run recommended queries/i }).first().click();
-    await expect(page.locator(".wb-query-status")).toContainText(/ran recommended resume storyline queries/i);
-    await expect(page.locator(".wb-query-tab")).toHaveCount(6);
+    await page.getByRole("button", { name: /Open Skills Matrix in SQL/i }).click();
+    await expect(page.locator(".wb-query-status")).toContainText(/row\(s\) returned/i);
+    await expect(page.locator(".wb-query-tab--active")).toContainText(/v_skills_matrix/i);
   });
 });

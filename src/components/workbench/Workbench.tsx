@@ -12,7 +12,7 @@ import {
 import { SchemaBrowser } from "@/components/workbench/SchemaBrowser";
 import { ResultsPanel } from "@/components/workbench/ResultsPanel";
 import { SqlEditorTabs } from "@/components/workbench/SqlEditorTabs";
-import { StandardResume } from "@/components/workbench/StandardResume";
+import { StandardResume, type ResumeShortcutId } from "@/components/workbench/StandardResume";
 import { ToolbarIcon } from "@/components/workbench/ToolbarIcon";
 import type { QueryTab } from "@/components/workbench/workbenchTypes";
 import { executeQuery, normalizeSql } from "@/lib/resumedb/executeQuery";
@@ -125,6 +125,16 @@ type NavigatorTab = "administration" | "schemas";
 type DisplayMode = "workbench" | "standard_resume";
 type ActiveResize = "sidebar" | "output" | null;
 
+const resumeShortcutSql: Record<ResumeShortcutId, string> = {
+  resume_one_page: "SELECT * FROM v_resume_one_page;",
+  skills_matrix: "SELECT skill, level, years, last_used FROM v_skills_matrix ORDER BY level DESC, years DESC;",
+  impact_highlights:
+    "SELECT * FROM v_impact_highlights WHERE metric_value IS NOT NULL ORDER BY metric_value DESC;",
+  experience_timeline:
+    "SELECT company, title, start_date, end_date, tech_stack FROM v_experience_timeline ORDER BY start_date DESC;",
+  best_work_reliability: "EXEC sp_best_work @theme = 'reliability';",
+};
+
 function clampValue(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
@@ -161,7 +171,7 @@ export function Workbench() {
   const [schemaSearch, setSchemaSearch] = useState("");
   const [selectedSchemaObjectName, setSelectedSchemaObjectName] = useState<string | null>(null);
   const [navigatorTab, setNavigatorTab] = useState<NavigatorTab>("schemas");
-  const [displayMode, setDisplayMode] = useState<DisplayMode>("workbench");
+  const [displayMode, setDisplayMode] = useState<DisplayMode>("standard_resume");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [denseMode, setDenseMode] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(defaultSidebarWidth);
@@ -342,6 +352,33 @@ export function Workbench() {
   );
 
   const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? null;
+
+  const loadSqlIntoActiveTab = useCallback(
+    (sql: string, notice: string, description?: string) => {
+      const result = executeQuery(sql, defaultMode);
+      const editorSql = buildSqlWithDescription(sql, description);
+
+      setTabs((previous) =>
+        previous.map((tab) =>
+          tab.id === activeTabId
+            ? {
+                ...tab,
+                title: makeQueryTitleForSql(
+                  sql,
+                  previous.filter((item) => item.id !== activeTabId).map((item) => item.title),
+                ),
+                sql: editorSql,
+                status: result.status,
+                result,
+              }
+            : tab,
+        ),
+      );
+      setDisplayMode("workbench");
+      setStatusNote(notice);
+    },
+    [activeTabId],
+  );
 
   const openPresetInNewTab = useCallback(
     (preset: PresetKey, notice: string) => {
@@ -597,7 +634,7 @@ export function Workbench() {
     const homeSql = buildSqlWithDescription(initialSqlBase, initialSqlDescription);
     const homeResult = executeQuery(initialSqlBase, defaultMode);
     const baseTabId = makeTabId();
-    setDisplayMode("workbench");
+    setDisplayMode("standard_resume");
     setNavigatorTab("schemas");
     setSidebarCollapsed(false);
     setDenseMode(false);
@@ -613,8 +650,24 @@ export function Workbench() {
       },
     ]);
     setActiveTabId(baseTabId);
-    setStatusNote("Returned to home resume workspace with profile snapshot preloaded");
+    setStatusNote("Returned to standard resume view with profile snapshot preloaded");
   }, [initialSqlBase, initialSqlDescription]);
+
+  const handleOpenSqlFromResume = useCallback(
+    (shortcutId?: ResumeShortcutId) => {
+      if (!shortcutId) {
+        setDisplayMode("workbench");
+        setStatusNote("Opened SQL workbench view from standard resume");
+        return;
+      }
+
+      const sql = resumeShortcutSql[shortcutId];
+      const definition = starterQueries.find((query) => query.id === shortcutId);
+      const description = definition?.simpleHint;
+      loadSqlIntoActiveTab(sql, `Opened ${definition?.simpleLabel ?? shortcutId} from standard resume`, description);
+    },
+    [loadSqlIntoActiveTab, starterQueries],
+  );
 
   const handleRunAdminAction = useCallback(
     (preset: PresetKey) => {
@@ -708,28 +761,28 @@ export function Workbench() {
           </button>
           <div className="wb-connection-tab">resume(local-bmarko) - Warning - not supported</div>
           <div className="wb-window-icons">
-            <button
-              type="button"
-              className={`wb-chrome-btn wb-chrome-btn--mode wb-hint-anchor${displayMode === "standard_resume" ? " wb-chrome-btn--active" : ""}`}
-              aria-label={
-                displayMode === "workbench"
-                  ? "Open standard resume view"
-                  : "Return to SQL workbench view"
-              }
-              onClick={() => {
-                setDisplayMode((previous) =>
-                  previous === "workbench" ? "standard_resume" : "workbench",
-                );
-                setStatusNote(
-                  displayMode === "workbench"
-                    ? "Opened standard resume view"
-                    : "Returned to SQL workbench view",
-                );
-              }}
-              data-hint={displayMode === "workbench" ? "Standard Resume" : "SQL Workbench"}
-            >
-              <span className="wb-glyph wb-glyph--mode">{displayMode === "workbench" ? "R" : "S"}</span>
-            </button>
+            <div className="wb-view-switch" role="group" aria-label="Display mode">
+              <button
+                type="button"
+                className={`wb-view-switch-btn${displayMode === "standard_resume" ? " wb-view-switch-btn--active" : ""}`}
+                onClick={() => {
+                  setDisplayMode("standard_resume");
+                  setStatusNote("Opened standard resume view");
+                }}
+              >
+                Resume
+              </button>
+              <button
+                type="button"
+                className={`wb-view-switch-btn${displayMode === "workbench" ? " wb-view-switch-btn--active" : ""}`}
+                onClick={() => {
+                  setDisplayMode("workbench");
+                  setStatusNote("Opened SQL workbench view");
+                }}
+              >
+                SQL
+              </button>
+            </div>
             <button
               type="button"
               className="wb-chrome-btn wb-hint-anchor"
@@ -958,7 +1011,7 @@ export function Workbench() {
             </div>
           </>
         ) : (
-          <StandardResume />
+          <StandardResume onOpenSqlExplorer={handleOpenSqlFromResume} />
         )}
         <footer className="wb-window-status">{footerText}</footer>
       </div>
