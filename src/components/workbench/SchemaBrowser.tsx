@@ -106,7 +106,7 @@ export function SchemaBrowser({
                               {(table.columns ?? []).map((column) => (
                                 <li key={`${table.name}_${column}`} className="wb-tree-leaf">
                                   <span className="wb-tree-icon wb-tree-icon--column" />
-                                  <span className="wb-tree-label" title={column}>
+                                  <span className="wb-tree-label wb-hint-anchor" data-hint={column}>
                                     {column}
                                   </span>
                                 </li>
@@ -133,8 +133,8 @@ export function SchemaBrowser({
                               <span className="wb-tree-icon wb-tree-icon--view" />
                               <button
                                 type="button"
-                                className={`wb-tree-object-button${selectedObjectName === view.name ? " wb-tree-object-button--selected" : ""}`}
-                                title={view.name}
+                                className={`wb-tree-object-button wb-hint-anchor${selectedObjectName === view.name ? " wb-tree-object-button--selected" : ""}`}
+                                data-hint={view.name}
                                 onClick={(event) => {
                                   event.preventDefault();
                                   event.stopPropagation();
@@ -154,7 +154,7 @@ export function SchemaBrowser({
                               {(view.columns ?? []).map((column) => (
                                 <li key={`${view.name}_${column}`} className="wb-tree-leaf">
                                   <span className="wb-tree-icon wb-tree-icon--column" />
-                                  <span className="wb-tree-label" title={column}>
+                                  <span className="wb-tree-label wb-hint-anchor" data-hint={column}>
                                     {column}
                                   </span>
                                 </li>
@@ -185,8 +185,8 @@ export function SchemaBrowser({
                               <ul>
                                 {procedure.examples.map((example) => (
                                   <li key={example} className="wb-tree-leaf">
-                                    <span className="wb-tree-icon wb-tree-icon--sql" />
-                                    <span className="wb-tree-label" title={example}>
+                                  <span className="wb-tree-icon wb-tree-icon--sql" />
+                                    <span className="wb-tree-label wb-hint-anchor" data-hint={example}>
                                       {example}
                                     </span>
                                   </li>
@@ -210,7 +210,7 @@ export function SchemaBrowser({
                       {functions.map((fn) => (
                         <li key={fn.name} className="wb-tree-leaf">
                           <span className="wb-tree-icon wb-tree-icon--function" />
-                          <span className="wb-tree-label" title={fn.name}>
+                          <span className="wb-tree-label wb-hint-anchor" data-hint={fn.name}>
                             {fn.name}
                           </span>
                         </li>

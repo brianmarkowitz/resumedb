@@ -705,7 +705,7 @@ export function Workbench() {
           <div className="wb-window-icons">
             <button
               type="button"
-              className={`wb-chrome-btn wb-chrome-btn--mode${displayMode === "standard_resume" ? " wb-chrome-btn--active" : ""}`}
+              className={`wb-chrome-btn wb-chrome-btn--mode wb-hint-anchor${displayMode === "standard_resume" ? " wb-chrome-btn--active" : ""}`}
               aria-label={
                 displayMode === "workbench"
                   ? "Open standard resume view"
@@ -721,49 +721,49 @@ export function Workbench() {
                     : "Returned to SQL workbench view",
                 );
               }}
-              title={displayMode === "workbench" ? "Standard Resume" : "SQL Workbench"}
+              data-hint={displayMode === "workbench" ? "Standard Resume" : "SQL Workbench"}
             >
               <span className="wb-glyph wb-glyph--mode">{displayMode === "workbench" ? "R" : "S"}</span>
             </button>
             <button
               type="button"
-              className="wb-chrome-btn"
+              className="wb-chrome-btn wb-hint-anchor"
               aria-label="Run governance lens"
               onClick={() => openPresetInNewTab("governance", "Opened governance leadership lens")}
-              title="Run governance lens"
+              data-hint="Run governance lens"
             >
               <span className="wb-glyph wb-glyph--gear" />
             </button>
             <button
               type="button"
-              className="wb-chrome-btn"
+              className="wb-chrome-btn wb-hint-anchor"
               aria-label="Toggle schema sidebar"
               onClick={() => {
                 setSidebarCollapsed((previous) => !previous);
                 setStatusNote("Toggled schema sidebar visibility");
               }}
-              title="Toggle schema sidebar"
+              data-hint="Toggle schema sidebar"
             >
               <span className="wb-glyph wb-glyph--layout-primary" />
             </button>
             <button
               type="button"
-              className="wb-chrome-btn"
+              className="wb-chrome-btn wb-hint-anchor"
               aria-label="Toggle compact density"
               onClick={() => {
                 setDenseMode((previous) => !previous);
                 setStatusNote("Toggled compact workbench density");
               }}
-              title="Toggle compact density"
+              data-hint="Toggle compact density"
             >
               <span className="wb-glyph wb-glyph--layout-secondary" />
             </button>
             <button
               type="button"
-              className="wb-chrome-btn"
+              className="wb-chrome-btn wb-hint-anchor"
               aria-label="Run recommended storyline"
               onClick={handleRunRecommended}
-              title="Run recommended storyline"
+              data-hint="Run recommended storyline"
             >
               <span className="wb-glyph wb-glyph--layout-solid" />
             </button>
@@ -776,76 +776,76 @@ export function Workbench() {
               <div className="wb-icon-row">
                 <button
                   type="button"
-                  className="wb-tool wb-tool--top"
+                  className="wb-tool wb-tool--top wb-hint-anchor"
                   onClick={handleLoadFirstSaved}
-                  title="Open first saved query"
+                  data-hint="Open first saved query"
                   aria-label="Open first saved query"
                 >
                   <ToolbarIcon name="sql-plus" />
                 </button>
                 <button
                   type="button"
-                  className="wb-tool wb-tool--top"
+                  className="wb-tool wb-tool--top wb-hint-anchor"
                   onClick={handleInsertNarrativeTemplate}
-                  title="Insert resume narrative template"
+                  data-hint="Insert resume narrative template"
                   aria-label="Insert resume narrative template"
                 >
                   <ToolbarIcon name="sql-doc" />
                 </button>
                 <button
                   type="button"
-                  className="wb-tool wb-tool--top"
+                  className="wb-tool wb-tool--top wb-hint-anchor"
                   onClick={handleSaveCurrentQuery}
-                  title="Save current query"
+                  data-hint="Save current query"
                   aria-label="Save current query"
                 >
                   <ToolbarIcon name="info" />
                 </button>
                 <button
                   type="button"
-                  className="wb-tool wb-tool--top"
+                  className="wb-tool wb-tool--top wb-hint-anchor"
                   onClick={() => openPresetInNewTab("onePage", "Opened one-page resume view")}
-                  title="Run one-page resume view"
+                  data-hint="Run one-page resume view"
                   aria-label="Run one-page resume view"
                 >
                   <ToolbarIcon name="db-plus" />
                 </button>
                 <button
                   type="button"
-                  className="wb-tool wb-tool--top"
+                  className="wb-tool wb-tool--top wb-hint-anchor"
                   onClick={() => openPresetInNewTab("governance", "Opened governance highlights view")}
-                  title="Run governance highlights"
+                  data-hint="Run governance highlights"
                   aria-label="Run governance highlights"
                 >
                   <ToolbarIcon name="table-plus" />
                 </button>
                 <button
                   type="button"
-                  className="wb-tool wb-tool--top"
+                  className="wb-tool wb-tool--top wb-hint-anchor"
                   onClick={() => {
                     setNavigatorTab("schemas");
                     setSchemaSearch("skill");
                     setStatusNote("Filtered schema objects to skills");
                   }}
-                  title="Filter schema to skills"
+                  data-hint="Filter schema to skills"
                   aria-label="Filter schema to skills"
                 >
                   <ToolbarIcon name="relation-plus" />
                 </button>
                 <button
                   type="button"
-                  className="wb-tool wb-tool--top"
+                  className="wb-tool wb-tool--top wb-hint-anchor"
                   onClick={() => openPresetInNewTab("reliability", "Opened reliability highlights view")}
-                  title="Run reliability highlights"
+                  data-hint="Run reliability highlights"
                   aria-label="Run reliability highlights"
                 >
                   <ToolbarIcon name="function-plus" />
                 </button>
                 <button
                   type="button"
-                  className="wb-tool wb-tool--top"
+                  className="wb-tool wb-tool--top wb-hint-anchor"
                   onClick={() => openPresetInNewTab("impact", "Opened impact metrics dashboard query")}
-                  title="Run impact highlights"
+                  data-hint="Run impact highlights"
                   aria-label="Run impact highlights"
                 >
                   <ToolbarIcon name="table-search" />
@@ -854,9 +854,9 @@ export function Workbench() {
               <div className="wb-icon-row">
                 <button
                   type="button"
-                  className="wb-tool wb-tool--top"
+                  className="wb-tool wb-tool--top wb-hint-anchor"
                   onClick={() => openPresetInNewTab("skills", "Opened skills matrix query")}
-                  title="Run skills matrix"
+                  data-hint="Run skills matrix"
                   aria-label="Run skills matrix"
                 >
                   <ToolbarIcon name="db-sync" />

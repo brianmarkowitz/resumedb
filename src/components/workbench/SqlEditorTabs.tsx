@@ -99,45 +99,45 @@ export function SqlEditorTabs({
         <div className="wb-query-toolbar-icons">
           <button
             type="button"
-            className="wb-tool wb-tool--editor"
+            className="wb-tool wb-tool--editor wb-hint-anchor"
             aria-label="Open first saved query"
-            title="Open first saved query"
+            data-hint="Open first saved query"
             onClick={onLoadFirstSavedQuery}
           >
             <ToolbarIcon name="editor-folder" />
           </button>
           <button
             type="button"
-            className="wb-tool wb-tool--editor"
+            className="wb-tool wb-tool--editor wb-hint-anchor"
             aria-label="Save current query"
-            title="Save current query"
+            data-hint="Save current query"
             onClick={onSaveCurrentQuery}
           >
             <ToolbarIcon name="editor-save" />
           </button>
           <button
             type="button"
-            className="wb-tool wb-tool--editor"
+            className="wb-tool wb-tool--editor wb-hint-anchor"
             aria-label="Execute query"
-            title="Execute query"
+            data-hint="Execute query"
             onClick={onRun}
           >
             <ToolbarIcon name="editor-bolt" />
           </button>
           <button
             type="button"
-            className="wb-tool wb-tool--editor"
+            className="wb-tool wb-tool--editor wb-hint-anchor"
             aria-label="Insert timeline query"
-            title="Insert timeline query"
+            data-hint="Insert timeline query"
             onClick={onInsertTimelineQuery}
           >
             <ToolbarIcon name="editor-bolt-alt" />
           </button>
           <button
             type="button"
-            className="wb-tool wb-tool--editor"
+            className="wb-tool wb-tool--editor wb-hint-anchor"
             aria-label="Clear current query"
-            title="Clear current query"
+            data-hint="Clear current query"
             onClick={onClearCurrentQuery}
           >
             <ToolbarIcon name="editor-clean" />
@@ -180,11 +180,18 @@ export function SqlEditorTabs({
             type="button"
             onClick={onRunRecommended}
             aria-label="Run recommended queries"
-            title="Run recommended queries"
+            className="wb-hint-anchor"
+            data-hint="Run recommended queries"
           >
             ★
           </button>
-          <button type="button" onClick={onRun} aria-label="Execute query" title="Run (Cmd/Ctrl + Enter)">
+          <button
+            type="button"
+            onClick={onRun}
+            aria-label="Execute query"
+            className="wb-hint-anchor"
+            data-hint="Run (Cmd/Ctrl + Enter)"
+          >
             ▶
           </button>
         </div>
